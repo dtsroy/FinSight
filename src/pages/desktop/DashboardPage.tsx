@@ -1,10 +1,12 @@
 import AlertRow from "@/components/desktop/AlertRow";
 import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
 import MonthlyExpenseDialog from "@/components/desktop/MonthlyExpenseDialog";
+import QuoteChangeBadge from "@/components/desktop/QuoteChangeBadge";
 import ShareReportPanel from "@/components/desktop/ShareReportPanel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAssetsByCategory, useAssetsByPlatform, useAssetSummary } from "@/hooks/useAssetLedger";
+import { useAssetsByCategory, useAssetsByPlatform, useAssetSummary, useQuotableAssets } from "@/hooks/useAssetLedger";
+import { usePortfolioQuoteChange, toQuoteRequests } from "@/hooks/useQuotes";
 import { useProfile } from "@/hooks/useProfile";
 import { useLatestStressRuns } from "@/hooks/useStress";
 import { useLatestXRay } from "@/hooks/useXray";
@@ -24,6 +26,11 @@ export default function DashboardPage() {
 
   const total = summary.data?.total ?? 0;
   const assetsCount = summary.data?.count ?? 0;
+
+  // 全量「有行情」资产 → 组合级今日涨跌（CNY），展示在总资产卡片上。
+  const quotableAssets = useQuotableAssets();
+  const portfolioQuoteRequests = useMemo(() => toQuoteRequests(quotableAssets.data ?? []), [quotableAssets.data]);
+  const portfolioChange = usePortfolioQuoteChange(portfolioQuoteRequests);
   const cashLike = useMemo(
     () => (byCategory.data ?? [])
       .filter((r) => r.category === "bank_deposit" || r.category === "cash_management")
@@ -88,6 +95,21 @@ export default function DashboardPage() {
           value={summary.isLoading ? null : formatCurrency(total)}
           note={`${assetsCount} 项资产 · ${byCategory.data?.length ?? 0} 个类别${summary.data?.converted ? " · 含外币（折算）" : ""}`}
           icon={<CircleDollarSign className="size-4 text-primary" />}
+          change={portfolioChange.data.covered > 0 ? (
+            <QuoteChangeBadge
+              variant="block"
+              detailed={false}
+              currency="CNY"
+              loading={portfolioChange.isLoading}
+              change={{
+                code: "portfolio",
+                changeAmount: portfolioChange.data.changeAmount,
+                changePct: portfolioChange.data.changePct,
+                currency: "CNY",
+                asOf: new Date().toISOString(),
+              }}
+            />
+          ) : null}
         />
         <MetricCard
           label="现金 + 存款"
@@ -239,11 +261,12 @@ function PlatformBar({ platform, amount, count, total }: { platform: string; amo
   );
 }
 
-function MetricCard({ label, value, note, icon, highlight }: { label: string; value: string | null; note?: string; icon?: React.ReactNode; highlight?: boolean }) {
+function MetricCard({ label, value, note, icon, highlight, change }: { label: string; value: string | null; note?: string; icon?: React.ReactNode; highlight?: boolean; change?: React.ReactNode }) {
   return (
     <section className={`rounded-lg border p-5 shadow-sm ${highlight ? "border-warning/40 bg-warning/10" : "border-border bg-card"}`}>
       <div className="flex items-center justify-between text-sm text-muted-foreground">{label}{icon}</div>
       {value == null ? <Skeleton className="mt-4 h-8 w-40" /> : <strong className="mt-4 block font-mono text-3xl tracking-tight text-primary md:text-4xl">{value}</strong>}
+      {change && <div className="mt-2">{change}</div>}
       {note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}
     </section>
   );

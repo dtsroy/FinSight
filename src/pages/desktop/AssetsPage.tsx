@@ -2,6 +2,7 @@ import AssetFilters from "@/components/desktop/AssetFilters";
 import BatchEditDialog, { type BatchField } from "@/components/desktop/BatchEditDialog";
 import BatchToolbar from "@/components/desktop/BatchToolbar";
 import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
+import QuoteChangeBadge from "@/components/desktop/QuoteChangeBadge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,12 +19,15 @@ import {
   useBatchUpdateAssets,
   useDeleteAsset,
   useMatchingAssetSummary,
+  useQuotableAssets,
   useUpdateAsset,
 } from "@/hooks/useAssetLedger";
+import { useAssetQuoteChanges, usePortfolioQuoteChange, toQuoteRequests } from "@/hooks/useQuotes";
 import { formatByCurrency, formatCompact, formatCurrency, formatNumber } from "@/lib/asset-format";
 import { CURRENCY_META, CURRENCY_ORDER, convertAmount, formatAmountForInput, parseAmountInput, toBaseAmount } from "@/lib/currency";
 import type { AssetBatchPatch, AssetListFilters } from "@/types/app/asset";
 import { CATEGORY_LABEL, CATEGORY_ORDER, type Asset, type AssetCategory, type AssetInput } from "@/types/app/asset";
+import { isQuotedCategory } from "@/types/app/quote";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -56,6 +60,14 @@ export default function AssetsPage() {
   const totalPages = useMemo(() => Math.max(1, Math.ceil(totalMatching / PAGE_SIZE)), [totalMatching]);
   const rows = listQuery.data?.rows ?? [];
   const platformNames = useMemo(() => (platformSummaryQuery.data ?? []).map((p) => p.platform), [platformSummaryQuery.data]);
+
+  // 当前页里「有行情」的资产 → 逐条取涨跌，用于表格内展示。
+  const pageQuoteRequests = useMemo(() => toQuoteRequests(rows), [rows]);
+  const pageQuotes = useAssetQuoteChanges(pageQuoteRequests);
+  // 全量「有行情」资产 → 组合级涨跌汇总，展示在总资产卡片上（不受分页影响）。
+  const quotableAssets = useQuotableAssets();
+  const portfolioQuoteRequests = useMemo(() => toQuoteRequests(quotableAssets.data ?? []), [quotableAssets.data]);
+  const portfolioChange = usePortfolioQuoteChange(portfolioQuoteRequests);
 
   const selectedIds = useMemo(() => Array.from(selected.keys()), [selected]);
   const selectedCount = selected.size;
@@ -170,6 +182,24 @@ export default function AssetsPage() {
           ? `${summaryQuery.data.count} 项资产已入账${totalConverted ? ` · ${totalMixed ? `含 ${currencyLabels.length} 种币种，` : "含外币资产，"}已按参考汇率折算为人民币` : ""}`
           : "载入中"}
         loading={summaryQuery.isLoading}
+        change={portfolioChange.data.covered > 0 ? (
+          <div className="mt-2 flex items-center gap-2 text-sm">
+            <span className="text-xs text-muted-foreground">今日涨跌</span>
+            <QuoteChangeBadge
+              variant="block"
+              detailed={false}
+              currency="CNY"
+              loading={portfolioChange.isLoading}
+              change={{
+                code: "portfolio",
+                changeAmount: portfolioChange.data.changeAmount,
+                changePct: portfolioChange.data.changePct,
+                currency: "CNY",
+                asOf: new Date().toISOString(),
+              }}
+            />
+          </div>
+        ) : null}
       />
       <div className="flex items-center justify-between rounded-lg border border-primary/25 bg-primary/5 p-5">
         <div><b>继续增加资产</b><p className="mt-1 text-xs text-muted-foreground">还有账户没归集？回到导入页继续。</p></div>
@@ -213,7 +243,7 @@ export default function AssetsPage() {
                       onCheckedChange={(checked) => toggleAllOnPage(checked === true)}
                     />
                   </th>
-                  <th className="px-4 py-3">名称</th><th className="px-4 py-3">类别</th><th className="px-4 py-3">平台</th><th className="px-4 py-3">代码</th><th className="px-4 py-3 text-right">金额</th><th className="w-24 px-4 py-3"></th>
+                  <th className="px-4 py-3">名称</th><th className="px-4 py-3">类别</th><th className="px-4 py-3">平台</th><th className="px-4 py-3">代码</th><th className="px-4 py-3 text-right">金额</th><th className="px-4 py-3 text-right">今日涨跌</th><th className="w-24 px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -238,6 +268,11 @@ export default function AssetsPage() {
                     <td className="px-4 py-3 text-right font-mono">
                       {formatByCurrency(asset.amount, asset.currency, true)}
                       {isNonCny && <span className="ml-1 text-[10px] font-sans tracking-wider text-muted-foreground">{meta?.code ?? asset.currency}</span>}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {isQuotedCategory(asset.category)
+                        ? <QuoteChangeBadge change={pageQuotes.data?.[asset.id]} loading={pageQuotes.isLoading} />
+                        : <span className="text-xs text-muted-foreground/50">—</span>}
                     </td>
                     <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" onClick={() => setEditing(asset)}><Pencil className="size-4" /></Button><Button variant="ghost" size="icon" onClick={() => setPendingDelete(asset)}><Trash2 className="size-4 text-destructive/70" /></Button></div></td>
                   </tr>;
@@ -316,8 +351,8 @@ function filtersActive(filters: AssetListFilters): boolean {
   return (filters.search?.trim().length ?? 0) > 0 || filters.category != null || filters.platform != null || filters.source != null || filters.currency != null;
 }
 
-function SummaryCard({ label, value, note, loading }: { label: string; value: string; note?: string; loading?: boolean }) {
-  return <section className="rounded-lg border border-border bg-card p-5"><div className="text-sm text-muted-foreground">{label}</div>{loading ? <Skeleton className="mt-3 h-8 w-32" /> : <strong className="mt-3 block font-mono text-2xl">{value}</strong>}{note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}</section>;
+function SummaryCard({ label, value, note, loading, change }: { label: string; value: string; note?: string; loading?: boolean; change?: React.ReactNode }) {
+  return <section className="rounded-lg border border-border bg-card p-5"><div className="text-sm text-muted-foreground">{label}</div>{loading ? <Skeleton className="mt-3 h-8 w-32" /> : <strong className="mt-3 block font-mono text-2xl">{value}</strong>}{change}{note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}</section>;
 }
 
 function EmptyState({ hasFilters }: { hasFilters: boolean }) {

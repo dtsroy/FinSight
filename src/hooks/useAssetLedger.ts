@@ -9,6 +9,7 @@ import {
   listAssetsByCategory,
   listAssetsByPlatform,
   listMatchingAssetSummary,
+  listQuotableAssets,
   summarizeAssets,
   updateAsset,
 } from "@/services/assetService";
@@ -54,6 +55,14 @@ export function useAssetsByPlatform(enabled = true) {
   return useQuery({
     queryKey: ASSET_KEYS.byPlatform,
     queryFn: listAssetsByPlatform,
+    enabled,
+  });
+}
+
+export function useQuotableAssets(enabled = true) {
+  return useQuery({
+    queryKey: ["assets", "quotable"] as const,
+    queryFn: listQuotableAssets,
     enabled,
   });
 }

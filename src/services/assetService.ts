@@ -8,6 +8,7 @@ import type {
   AssetPage,
   CategorySummary,
 } from "@/types/app/asset";
+import { QUOTED_CATEGORIES } from "@/types/app/quote";
 
 interface AssetRow {
   id: string;
@@ -153,6 +154,35 @@ export async function listAssetsByPlatform(): Promise<PlatformSummary[]> {
     }
   }
   return Array.from(acc.values()).sort((a, b) => b.amount - a.amount);
+}
+
+export interface QuotableAsset {
+  id: string;
+  code: string | null;
+  category: Asset["category"];
+  amount: number;
+  currency: string;
+}
+
+/**
+ * 拉取全部「有行情」的资产（基金/股票等），供涨跌汇总用。
+ * 只取行情所需的最小字段，类别范围与 quote.ts 的 QUOTED_CATEGORIES 单一来源保持一致。
+ */
+export async function listQuotableAssets(): Promise<QuotableAsset[]> {
+  const userId = await requireUserId();
+  const { data, error } = await supabase
+    .from("assets")
+    .select("id, code, category, amount, currency")
+    .eq("user_id", userId)
+    .in("category", Array.from(QUOTED_CATEGORIES));
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    code: (row.code as string | null) ?? null,
+    category: row.category as Asset["category"],
+    amount: Number(row.amount ?? 0),
+    currency: ((row.currency as string | null) || "CNY").toUpperCase(),
+  }));
 }
 
 export interface AssetSummary {
