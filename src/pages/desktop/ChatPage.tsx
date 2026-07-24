@@ -72,8 +72,8 @@ export default function ChatPage() {
         description="医生会读你的账本、X 光穿透、压力测试结果后再回答，永不推荐具体买卖，末尾都会附风险提示。"
       />
 
-      <section className="grid flex-1 gap-6 lg:grid-cols-[.9fr_2.1fr]">
-        <aside className="space-y-4">
+      <section className="flex flex-1 flex-col gap-6">
+        <aside className="grid gap-4 md:grid-cols-3">
           <article className="rounded-lg border border-border bg-card p-5">
             <h2 className="text-sm font-medium">诊断师定位</h2>
             <ul className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
@@ -84,8 +84,8 @@ export default function ChatPage() {
           </article>
           <article className="rounded-lg border border-border bg-card p-5">
             <h2 className="mb-3 text-sm font-medium">常见问题</h2>
-            <div className="flex flex-col gap-2">
-              {SUGGESTIONS.map((s) => (
+            <div className="grid gap-2">
+              {SUGGESTIONS.slice(0, 2).map((s) => (
                 <button
                   key={s}
                   className="rounded-md border border-border bg-secondary/40 px-3 py-2 text-left text-xs leading-5 text-muted-foreground transition hover:border-primary/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
@@ -97,8 +97,8 @@ export default function ChatPage() {
               ))}
             </div>
           </article>
-          <article className="rounded-lg border border-info/30 bg-info/5 p-4 text-xs leading-5 text-muted-foreground">
-            <b className="block text-foreground">还没数据？</b>
+          <article className="rounded-lg border border-info/30 bg-info/5 p-5 text-xs leading-5 text-muted-foreground flex flex-col justify-center">
+            <b className="block text-foreground text-sm mb-2">还没数据？</b>
             <p className="mt-1">医生会引导你先去 <Link to="/xray" className="text-link underline">/xray</Link> 或 <Link to="/stress-test" className="text-link underline">/stress-test</Link> 生成体检快照。</p>
           </article>
         </aside>
