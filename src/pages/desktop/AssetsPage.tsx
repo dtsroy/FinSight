@@ -59,34 +59,6 @@ function getPlatformIcon(platform: string | undefined) {
   return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
 }
 
-<<<<<<< local
-||||||| base
-import ccbLogo from "@/assets/bank-logos/ccb.svg";
-import cebLogo from "@/assets/bank-logos/ceb.svg";
-import cibLogo from "@/assets/bank-logos/cib.svg";
-import citicLogo from "@/assets/bank-logos/citic.svg";
-import cmbLogo from "@/assets/bank-logos/cmb.svg";
-import hsbcLogo from "@/assets/bank-logos/hsbc.svg";
-import scbLogo from "@/assets/bank-logos/scb.svg";
-import spbLogo from "@/assets/bank-logos/spb.svg";
-
-function getPlatformIcon(platform: string | undefined) {
-  if (!platform) return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
-  
-  const name = platform.toLowerCase();
-  if (name.includes("招商银行")) return <img src={cmbLogo} alt="招商银行" className="size-4 shrink-0" />;
-  if (name.includes("建设银行")) return <img src={ccbLogo} alt="建设银行" className="size-4 shrink-0" />;
-  if (name.includes("中信银行")) return <img src={citicLogo} alt="中信银行" className="size-4 shrink-0" />;
-  if (name.includes("光大银行")) return <img src={cebLogo} alt="光大银行" className="size-4 shrink-0" />;
-  if (name.includes("兴业银行")) return <img src={cibLogo} alt="兴业银行" className="size-4 shrink-0" />;
-  if (name.includes("汇丰银行")) return <img src={hsbcLogo} alt="汇丰银行" className="size-4 shrink-0" />;
-  if (name.includes("渣打银行")) return <img src={scbLogo} alt="渣打银行" className="size-4 shrink-0" />;
-  if (name.includes("浦发银行")) return <img src={spbLogo} alt="浦发银行" className="size-4 shrink-0" />;
-  
-  return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
-}
-
-=======
 import abcLogo from "@/assets/bank-logos/abc.svg";
 import alipayLogo from "@/assets/bank-logos/alipay.svg";
 import bocLogo from "@/assets/bank-logos/boc.svg";
@@ -132,7 +104,6 @@ function getPlatformIcon(platform: string | undefined) {
   return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
 }
 
->>>>>>> remote
 const PAGE_SIZE = 20;
 const EMPTY_FILTERS: AssetListFilters = { search: "", category: null, platform: null, source: null, currency: null };
 
