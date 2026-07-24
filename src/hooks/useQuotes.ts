@@ -33,7 +33,8 @@ export function useAssetQuoteChanges(requests: QuoteChangeRequest[], enabled = t
     queryKey: ["quote-changes", fingerprint],
     queryFn: () => fetchAssetQuoteChanges(requests),
     enabled: enabled && requests.length > 0,
-    staleTime: 1000 * 60 * 5, // 行情 5 分钟内不重复拉取
+    staleTime: 1000 * 60 * 5, // 行情 5 分钟内不做后台自动刷新
+    refetchOnMount: "always", // 但每次进入 AssetsPage（组件挂载）都强制拉一次
   });
 }
 

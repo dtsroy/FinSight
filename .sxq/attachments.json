@@ -1,6 +1,6 @@
 {
   "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
-  "pulledAt": "2026-07-24T07:22:16.168Z",
+  "pulledAt": "2026-07-24T08:08:14.166Z",
   "tree": {
     ".qoder": {
       "repowiki": {
@@ -749,8 +749,8 @@
           "hash": "67084f7b96d125f6199f5e6066807cd1b9f756eea51eb22b096e23ec489c3384"
         },
         "useQuotes.ts": {
-          "rowKey": "a33c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006823",
-          "hash": "e320d9524e57696ae1ffcfe21ee62b962479180df89d897449adcdbe56c47f9a"
+          "rowKey": "a33c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784878494871",
+          "hash": "c80356dc590de8df300b976ab90f9bb545285076d43ed5ad0a3e59c969fb9b29"
         },
         "useStress.ts": {
           "rowKey": "216c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784793734676",
@@ -815,8 +815,8 @@
           "hash": "f2ba6611139ae486ae14f18c6ae680cdfe41e05ace84657a74d4176ed55cdda0"
         },
         "quoteService.ts": {
-          "rowKey": "283a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006857",
-          "hash": "c862235232f0e390382bdf9b5d97c5aed68a77439225eab75c1d1f8d498c8bf1"
+          "rowKey": "283a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784878494891",
+          "hash": "1bffce47cc0698a15d95d7b338184cb19d8f8980bcb80be9bda07acc7f25c2f6"
         }
       },
       "pages": {
@@ -850,8 +850,8 @@
             "hash": "26dd6b0abc6ddfb553b3a0ce47184a516eb0110e99263e7ac39a3576b4620fa5"
           },
           "AssetsPage.tsx": {
-            "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006833",
-            "hash": "dc3dac4ec3b9d157453a2289f743335a332ba253026d0329ad0a8b272d46d3be"
+            "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784878494880",
+            "hash": "1ae8e298a9fc82b342deb24a89588e0ff467e5d4fdf2e00c1df98d8b86d48935"
           }
         },
         "NotFound.tsx": {
@@ -862,8 +862,8 @@
       "types": {
         "app": {
           "quote.ts": {
-            "rowKey": "353f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006862",
-            "hash": "ff1efc1aaebd9deaeced5dc803bf9bcef99ccd12879e7dcd16e6dd736afb5783"
+            "rowKey": "353f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784878494899",
+            "hash": "34032f9e11025faa8ddbdf5965acd3d474a778fda2f0001e313f95a9683ef7fc"
           },
           "asset.ts": {
             "rowKey": "5a0a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784799434534",
@@ -1147,5 +1147,7 @@
       "hash": "14ab3c2a5ca72cd5f5cc48ee4c4ede690cc0a63129ad850874189ea14bf5f49e"
     }
   },
-  "conflicts": []
+  "conflicts": [
+    "src/services/quoteService.ts"
+  ]
 }

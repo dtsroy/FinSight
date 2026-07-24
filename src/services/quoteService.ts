@@ -10,10 +10,17 @@ import { classifyQuoteInstrument } from "@/types/app/quote";
 /**
  * Quote backend base URL — cpolar intranet tunnel.
  * Override via VITE_QUOTE_API_URL in .env.local when testing locally without the tunnel.
+ * 用 https 地址，避免 HTTPS 页面调用 http 接口时被浏览器 Mixed Content 静默拦截。
  */
 const QUOTE_API_BASE =
   (import.meta.env.VITE_QUOTE_API_URL as string | undefined) ??
-  "http://55b599cd.r7.cpolar.top";
+  "https://55b599cd.r7.cpolar.top";
+
+/**
+ * 调试开关：分类算法决定去请求涨跌时，在控制台打印每条资产的判定结果与目标接口。
+ * 调试完成后把它改成 false 即可关闭日志（不再有任何弹窗）。
+ */
+const DEBUG_QUOTE_LOG = true;
 
 /**
  * Call the local Python backend for a single asset's day-change %.
@@ -24,14 +31,39 @@ async function fetchChangePct(
   code: string,
 ): Promise<number | null> {
   const endpoint = category === "stock" ? "get_stock_diff" : "get_fund_diff";
-  try {
-    const res = await fetch(
-      `${QUOTE_API_BASE}/${endpoint}?code=${encodeURIComponent(code)}`,
+  const url = `${QUOTE_API_BASE}/${endpoint}?code=${encodeURIComponent(code)}`;
+
+  // 混合内容自检：页面是 HTTPS 但接口是 HTTP 时，浏览器会在请求发出前就静默拦截，
+  // 后端因此收不到任何请求。这里显式报出来，避免再被 catch 吞掉。
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    url.startsWith("http://")
+  ) {
+    console.error(
+      `[quote] ❌ Mixed Content 拦截：页面是 HTTPS，但行情接口是 HTTP，浏览器已在发送前拦截。\n` +
+        `  URL = ${url}\n` +
+        `  解决：把 QUOTE_API_BASE 换成 https 的 cpolar 地址，或用 http 打开前端。`,
     );
-    if (!res.ok) return null;
+    return null;
+  }
+
+  try {
+    console.debug(`[quote] → GET ${url}`);
+    const res = await fetch(url);
+    console.debug(`[quote] ← ${res.status} ${res.statusText}  (${url})`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "<无法读取响应体>");
+      console.warn(`[quote] ⚠️ 非 2xx 响应：${res.status}，body=`, body);
+      return null;
+    }
     const json = (await res.json()) as { change_pct: number };
     return json.change_pct;
-  } catch {
+  } catch (err) {
+    console.error(
+      `[quote] ❌ 请求失败（常见原因：Mixed Content / CORS / cpolar 拦截页 / 网络）：${url}`,
+      err,
+    );
     return null;
   }
 }
@@ -49,6 +81,15 @@ export async function fetchAssetQuoteChanges(
 ): Promise<QuoteChangeMap> {
   const map: QuoteChangeMap = {};
   const nowIso = new Date().toISOString();
+
+  // 先跑一遍分类算法，得到每条资产「走哪个接口 / 是否跳过」的判定。
+  const decisions = requests.map((req) => ({
+    req,
+    instrument: classifyQuoteInstrument(req.code, req.category),
+  }));
+
+  // 调试用：算法决定请求涨跌的这一刻，把判定明细打到控制台。
+  if (DEBUG_QUOTE_LOG) logQuoteDecisions(decisions);
 
   await Promise.all(
     requests.map(async (req) => {
@@ -72,6 +113,37 @@ export async function fetchAssetQuoteChanges(
   );
 
   return map;
+}
+
+/** 每条资产判定：instrument 为 null 表示算法认为它没有行情。 */
+type QuoteDecision = {
+  req: QuoteChangeRequest;
+  instrument: ReturnType<typeof classifyQuoteInstrument>;
+};
+
+/**
+ * 调试日志：把「分类算法的判定 + 目标接口」打印到控制台，方便核对每条资产
+ * 被判成股票还是基金、命中哪个后端接口、以及哪些被跳过。（不再使用 alert 弹窗）
+ */
+function logQuoteDecisions(decisions: QuoteDecision[]): void {
+  if (decisions.length === 0) {
+    console.debug("[quote] 本次没有可请求行情的资产（requests 为空）");
+    return;
+  }
+  const willFetch = decisions.filter((d) => d.instrument !== null);
+  console.group(
+    `[quote] 即将请求涨跌 ${willFetch.length}/${decisions.length} 条 · base=${QUOTE_API_BASE}`,
+  );
+  for (const { req, instrument } of decisions) {
+    const code = req.code ?? req.id;
+    if (!instrument) {
+      console.debug(`⏭️ ${code}（类别 ${req.category}）→ 跳过（判为无行情）`);
+    } else {
+      const endpoint = instrument === "stock" ? "get_stock_diff" : "get_fund_diff";
+      console.debug(`📈 ${code}（类别 ${req.category}）→ ${instrument} · /${endpoint}`);
+    }
+  }
+  console.groupEnd();
 }
 
 /**

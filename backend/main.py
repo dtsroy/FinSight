@@ -41,7 +41,9 @@ app.add_middleware(
         "http://localhost:5173",              # Vite default dev port
         "http://localhost:4173",              # Vite preview port
         "http://localhost:3000",              # alternative dev port
-        "http://55b599cd.r7.cpolar.top",     # cpolar intranet tunnel
+        "http://55b599cd.r7.cpolar.top",     # cpolar intranet tunnel (http)
+        "https://55b599cd.r7.cpolar.top",    # cpolar intranet tunnel (https)
+        # TODO: 把前端实际访问的域名也加进来，例如部署域名 / 预览域名
     ],
     allow_methods=["GET"],
     allow_headers=["*"],
