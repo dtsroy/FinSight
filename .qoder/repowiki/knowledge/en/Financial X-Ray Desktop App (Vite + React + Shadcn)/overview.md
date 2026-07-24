@@ -1,0 +1,1 @@
+Root of a single-tenant Vite/React SPA that wires TypeScript paths, shadcn/ui component aliases, Tailwind theming, and Supabase-backed asset-tracking features into one buildable desktop app.

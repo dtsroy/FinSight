@@ -2,7 +2,7 @@ import AccountDialog from "@/components/desktop/AccountDialog";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
 import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -17,6 +17,28 @@ export default function LandingPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"signin" | "signup">("signin");
   const [signingOut, setSigningOut] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // 计算旋转角度 (最大偏转 10 度)
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = -((y - centerY) / centerY) * 10;
+    const rotateY = ((x - centerX) / centerX) * 10;
+    
+    setRotation({ x: rotateX, y: rotateY });
+  }
+
+  function handleMouseLeave() {
+    setRotation({ x: 0, y: 0 });
+  }
 
   function openDialog(mode: "signin" | "signup") {
     setDialogMode(mode);
@@ -96,28 +118,44 @@ export default function LandingPage() {
                 : "你的账本、诊断和对话全部按账号隔离，任何人（含开发者）都读不到你的私人明细。"}
             </p>
           </div>
-          <div className="radiograph-panel relative rounded-lg border border-border bg-card p-5 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 md:p-7">
-            <div className="scanner-line" />
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <span className="font-mono text-xs text-muted-foreground">X-RAY · ENGINE ACTIVE</span>
-              <span className="rounded-full border border-destructive/30 bg-destructive/10 px-3 py-1 text-xs text-destructive">触发 Critical 级告警</span>
+          <div className="group perspective-1000 relative">
+            <div 
+              ref={cardRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              className="radiograph-panel relative rounded-xl border border-border/50 bg-card/80 p-5 backdrop-blur-xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[20px_20px_40px_-10px_rgba(249,115,22,0.15)] md:p-7"
+              style={{
+                transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
+              }}
+            >
+              <div className="scanner-line" />
+              <div className="flex items-center justify-between border-b border-border/50 pb-4">
+              <span className="font-mono text-xs font-semibold text-muted-foreground tracking-widest">X-RAY · ENGINE ACTIVE</span>
+              <span className="relative flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
+                  <span className="relative inline-flex size-2 rounded-full bg-destructive"></span>
+                </span>
+                Critical 级告警
+              </span>
             </div>
             <div className="py-9 text-center">
               <p className="text-sm text-muted-foreground">贵州茅台 · 重复暴露计算</p>
               <strong className="mt-3 block font-mono text-7xl text-destructive">18%</strong>
               <p className="mt-3 text-sm text-muted-foreground">表面直接持有仅 8%</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded border border-border bg-background/50 p-4">
-                <p className="text-xs text-muted-foreground">高危行业集中度</p>
-                <b className="mt-2 block font-mono text-2xl text-chart-4">60%+</b>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-lg border border-border/50 bg-background/40 p-4 transition-colors group-hover:bg-background/60">
+                <p className="text-xs font-medium text-muted-foreground">高危行业集中度</p>
+                <b className="mt-2 block font-mono text-3xl tracking-tight text-chart-4">60%+</b>
               </div>
-              <div className="rounded border border-border bg-background/50 p-4">
-                <p className="text-xs text-muted-foreground">应急资金储备</p>
-                <b className="mt-2 block font-mono text-2xl text-destructive">&lt; 3 个月</b>
+              <div className="rounded-lg border border-border/50 bg-background/40 p-4 transition-colors group-hover:bg-background/60">
+                <p className="text-xs font-medium text-muted-foreground">应急资金储备</p>
+                <b className="mt-2 block font-mono text-3xl tracking-tight text-destructive">&lt; 3 个月</b>
               </div>
             </div>
           </div>
+        </div>
         </section>
         <section className="mt-24 grid gap-6 md:grid-cols-3">
           {features.map(({ icon: Icon, title, text }) => (

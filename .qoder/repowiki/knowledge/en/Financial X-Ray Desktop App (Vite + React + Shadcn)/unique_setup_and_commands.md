@@ -1,0 +1,1 @@
+Run `pnpm dev` to start the Vite dev server, `pnpm build` to emit static assets, or `pnpm preview` to serve the production build locally. New shadcn/ui components are added via the CLI configured by `components.json` (aliases point at `@/components/ui`).

@@ -1,0 +1,1 @@
+React 19 + TypeScript, Vite dev server, `react-router-dom` v6 data router, `@tanstack/react-query` for server state, `@supabase/supabase-js` with `localStorage` session persistence, `next-themes` for class-based theme toggling, `sonner` for toast notifications, `lucide-react` icons, and Tailwind CSS via shadcn/ui primitives.

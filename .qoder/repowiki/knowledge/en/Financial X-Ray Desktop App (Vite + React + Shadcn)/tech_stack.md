@@ -1,0 +1,1 @@
+Vite 6 + @vitejs/plugin-react as the single build pipeline; TypeScript project references split into `tsconfig.app.json` (browser) and `tsconfig.node.json` (tooling); Tailwind 3 + PostCSS + autoprefixer with shadcn/ui 'new-york' style; Supabase JS client as the sole backend SDK.

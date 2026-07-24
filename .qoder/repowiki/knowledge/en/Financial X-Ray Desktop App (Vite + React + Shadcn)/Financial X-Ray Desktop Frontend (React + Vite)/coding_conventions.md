@@ -1,0 +1,6 @@
+- Service functions are plain async exports that call `requireUserId()` at the top and throw the raw Supabase error object on failure; callers never catch inside the service layer.
+- Each feature groups its React Query keys under a named constant (e.g. `ASSET_KEYS`) returning `as const` tuples, so `queryKey` is derived rather than duplicated inline.
+- Mutations invalidate all related queries by calling `client.invalidateQueries({ queryKey: ["assets"] })` (or the feature's root key) in `onSuccess`, instead of refetching individual keys.
+- Domain row-to-type conversion lives next to the service function (e.g. `toAsset(row)`), keeping DB column names isolated from component code.
+- User-scoped Supabase queries always chain `.eq("user_id", userId)` as the first filter after `.from(...)`, enforced centrally by `requireUserId()`.
+- All component and hook imports use the `@/` path alias (e.g. `@/services/assetService`, `@/components/ui/button`) rather than relative paths.

@@ -1,0 +1,36 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-07-24T05:04:20Z"
+modules:
+    "":
+        dir_name: Financial X-Ray Desktop App (Vite + React + Shadcn)
+        title: Financial X-Ray Desktop App (Vite + React + Shadcn)
+        scope:
+            - package.json
+            - pnpm-lock.yaml
+            - vite.config.ts
+            - tsconfig.json
+            - tailwind.config.js
+            - postcss.config.js
+            - components.json
+            - index.html
+            - README.md
+            - tsconfig.app.json
+            - tsconfig.node.json
+        source_files: []
+        children:
+            - frontend_app
+        depends_on: []
+        related_to: []
+    frontend_app:
+        dir_name: Financial X-Ray Desktop Frontend (React + Vite)
+        title: Financial X-Ray Desktop Frontend (React + Vite)
+        scope:
+            - src/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

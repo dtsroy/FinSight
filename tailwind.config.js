@@ -21,6 +21,9 @@ export default {
                 'mobile': {'max': '639px'},
                 "2xl": "1440px",
             },
+            perspective: {
+                '1000': '1000px',
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
@@ -132,5 +135,20 @@ export default {
             },
         },
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [
+        require("tailwindcss-animate"),
+        function ({ addUtilities }) {
+            addUtilities({
+                '.perspective-1000': {
+                    perspective: '1000px',
+                },
+                '.rotate-y-[-5deg]': {
+                    transform: 'rotateY(-5deg)',
+                },
+                '.rotate-x-[5deg]': {
+                    transform: 'rotateX(5deg)',
+                },
+            })
+        }
+    ],
 }

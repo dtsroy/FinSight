@@ -1,0 +1,1 @@
+Desktop-first React SPA for personal finance asset tracking, import, AI chat, and stress testing backed by Supabase.
