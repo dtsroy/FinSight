@@ -116,7 +116,9 @@ export function classifyQuoteInstrument(
   const raw = (code ?? "").trim().toUpperCase();
   const digits = raw.replace(/[^0-9]/g, "");
   const hasLetters = /[A-Z]/.test(raw);
-
+  // 4~5) 代码无法判断，回落到用户填写的类别。
+  if (category === "stock") return "stock";
+  if (category === "fund") return "fund";
   // 1) 字母型代码（且非「6 位数字 + 市场后缀」的 A 股写法）→ 境外股票。
   if (hasLetters && digits.length !== 6) return "stock";
 
@@ -134,8 +136,6 @@ export function classifyQuoteInstrument(
   // 3) 5 位数字 → 港股。
   if (!hasLetters && digits.length === 5) return "stock";
 
-  // 4~5) 代码无法判断，回落到用户填写的类别。
-  if (category === "stock") return "stock";
-  if (category === "fund") return "fund";
+
   return null;
 }

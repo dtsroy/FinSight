@@ -84,6 +84,7 @@ def get_stock_diff(code: str) -> float:
     )
 
     if df is None or df.empty:
+        print("panda API error: no daily data returned for", symbol)
         raise RuntimeError(f"No daily data returned for '{symbol}'.")
 
     # `date` is a YYYYMMDD string, so lexical sort == chronological sort.

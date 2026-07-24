@@ -60,14 +60,24 @@ async function fetchLiveFundHoldings(): Promise<Record<string, FundTopHolding[]>
     );
     if (codes.length === 0) return {};
 
+    console.debug(`[xray-debug] fetchLiveFundHoldings 待拉取基金代码 (${codes.length}):`, codes);
+
     const live: Record<string, FundTopHolding[]> = {};
     await Promise.all(
       codes.map(async (code) => {
         const holdings = await fetchFundTopHoldings(code);
         // null = 拉取失败或空仓披露，直接舍弃该基金（失败原因已在 quoteService 打日志）。
-        if (!holdings) return;
+        if (!holdings) {
+          console.debug(`[xray-debug] fetchLiveFundHoldings 基金 ${code} → 无实时重仓（舍弃，将回退静态底稿）`);
+          return;
+        }
+        console.debug(`[xray-debug] fetchLiveFundHoldings 基金 ${code} → 保留 ${holdings.length} 条实时重仓`);
         live[code] = holdings;
       }),
+    );
+    console.debug(
+      `[xray-debug] fetchLiveFundHoldings 最终 live_holdings 命中基金数=${Object.keys(live).length}:`,
+      live,
     );
     return live;
   } catch (err) {
@@ -79,11 +89,16 @@ async function fetchLiveFundHoldings(): Promise<Record<string, FundTopHolding[]>
 export async function runXRayScan(): Promise<XRayReport> {
   // 先尽力拉取每只基金的实时重仓；拿不到的由后端回退静态底稿或标记未穿透。
   const liveHoldings = await fetchLiveFundHoldings();
+  console.debug("[xray-debug] runXRayScan 即将发送给 compute-xray-report 的 live_holdings:", liveHoldings);
   const { data, error } = await supabase.functions.invoke<{ report: Record<string, unknown> }>(
     "compute-xray-report",
     { body: { live_holdings: liveHoldings } },
   );
   if (error) throw error;
   if (!data?.report) throw new Error("empty_report");
+  console.debug("[xray-debug] runXRayScan 收到 report 原始数据:", data.report);
+  console.debug("[xray-debug] runXRayScan report.unmatched_funds（未穿透基金）:", data.report.unmatched_funds);
+  console.debug("[xray-debug] runXRayScan report.top_stocks:", data.report.top_stocks);
+  console.debug("[xray-debug] runXRayScan report.industry_exposure:", data.report.industry_exposure);
   return toReport(data.report);
 }

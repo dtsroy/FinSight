@@ -47,23 +47,40 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const raw = (body as Record<string, unknown> | null)?.live_holdings;
+    console.debug("[xray-debug] edge 收到 body.live_holdings 原始值:", JSON.stringify(raw));
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
       for (const [fundCode, items] of Object.entries(raw as Record<string, unknown>)) {
-        if (!Array.isArray(items)) continue;
+        if (!Array.isArray(items)) {
+          console.debug(`[xray-debug] edge 基金 ${fundCode} 的 items 不是数组，跳过:`, items);
+          continue;
+        }
         const valid: LiveHoldingItem[] = [];
         for (const it of items) {
           const rec = it as Record<string, unknown> | null;
           const stockCode = String(rec?.stock_code ?? "").trim();
           const weight = Number(rec?.weight);
-          if (!stockCode || !Number.isFinite(weight) || weight <= 0) continue;
+          if (!stockCode || !Number.isFinite(weight) || weight <= 0) {
+            console.debug(
+              `[xray-debug] edge 基金 ${fundCode} 丢弃脏条目: stock_code=${JSON.stringify(rec?.stock_code)}, weight=${JSON.stringify(rec?.weight)}(→${weight})`,
+            );
+            continue;
+          }
           valid.push({ stock_code: stockCode, weight });
         }
+        console.debug(`[xray-debug] edge 基金 ${fundCode} 校验后保留 ${valid.length}/${items.length} 条实时重仓`);
         if (valid.length > 0) liveHoldingsMap.set(String(fundCode), valid);
       }
+    } else {
+      console.debug("[xray-debug] edge live_holdings 形状不符合预期（非对象或为数组），当作无实时数据");
     }
-  } catch {
+  } catch (err) {
     // 无 body 或 JSON 解析失败：当作没有实时数据，继续走静态底稿。
+    console.debug("[xray-debug] edge body JSON 解析失败，当作无实时数据:", err);
   }
+  console.debug(
+    `[xray-debug] edge 最终 liveHoldingsMap 命中基金数=${liveHoldingsMap.size}, keys=`,
+    Array.from(liveHoldingsMap.keys()),
+  );
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -106,6 +123,14 @@ Deno.serve(async (req) => {
     // 已有实时重仓的基金不再查静态底稿，底稿只作为未命中基金的回退。
     const fallbackFundCodes = fundCodes.filter((c) => !liveHoldingsMap.has(c));
 
+    console.debug(
+      `[xray-debug] edge 资产统计: 总资产=${assets.length}, 基金=${fundAssets.length}, 股票=${stockAssets.length}`,
+    );
+    console.debug("[xray-debug] edge fundCodes:", fundCodes);
+    console.debug("[xray-debug] edge stockCodes:", stockCodes);
+    console.debug("[xray-debug] edge liveStockCodes(实时重仓底层股):", liveStockCodes);
+    console.debug("[xray-debug] edge fallbackFundCodes(需查静态底稿的基金):", fallbackFundCodes);
+
     const [mastersRes, holdingsRes, industriesRes] = await Promise.all([
       supabase.from("fund_master").select("fund_code, fund_name")
         .in("fund_code", fundCodes.length ? fundCodes : ["__none__"]),
@@ -129,6 +154,12 @@ Deno.serve(async (req) => {
     const industryMap = new Map<string, { name: string; industry: string }>(
       (industriesRes.data ?? []).map((s: { stock_code: string; stock_name: string; industry: string }) => [s.stock_code, { name: s.stock_name, industry: s.industry }]),
     );
+
+    console.debug(
+      `[xray-debug] edge 参考表加载: fund_master=${masterMap.size} 条, fund_holdings(静态底稿)=${holdingsMap.size} 只基金, stock_industry=${industryMap.size} 条`,
+    );
+    console.debug("[xray-debug] edge holdingsMap 静态底稿覆盖基金:", Array.from(holdingsMap.keys()));
+    console.debug("[xray-debug] edge industryMap 已解析股票代码:", Array.from(industryMap.keys()));
 
     const stockExposureMap = new Map<string, StockExposure>();
     const industryExposureMap = new Map<string, number>();
@@ -156,6 +187,7 @@ Deno.serve(async (req) => {
     for (const fa of fundAssets) {
       const amount = toBaseAmount(fa.amount, fa.currency);
       if (!fa.code) {
+        console.debug(`[xray-debug] edge 基金 "${fa.name}" 无代码 → 未穿透（未知底层）`);
         unmatched.push({ code: null, name: fa.name, amount, reason: "无基金代码" });
         industryExposureMap.set("未知底层", (industryExposureMap.get("未知底层") ?? 0) + amount);
         continue;
@@ -166,6 +198,7 @@ Deno.serve(async (req) => {
       const liveItems = liveHoldingsMap.get(code);
       let items: FundHolding[];
       if (liveItems) {
+        console.debug(`[xray-debug] edge 基金 ${code}(${fundName}) → 使用实时重仓 ${liveItems.length} 条`);
         // 实时重仓只有代码 + 权重；名称/行业用 stock_industry 解析，查不到归「其他」。
         items = liveItems.map((h) => {
           const info = industryMap.get(h.stock_code);
@@ -179,9 +212,13 @@ Deno.serve(async (req) => {
         });
       } else {
         items = holdingsMap.get(code) ?? [];
+        console.debug(
+          `[xray-debug] edge 基金 ${code}(${fundName}) → 无实时重仓，回退静态底稿命中 ${items.length} 条`,
+        );
       }
 
       if (items.length === 0) {
+        console.debug(`[xray-debug] edge 基金 ${code}(${fundName}) → 未穿透（实时+底稿都为空），金额=${amount}`);
         unmatched.push({ code, name: fundName, amount, reason: "实时重仓不可用且底稿未收录" });
         industryExposureMap.set("未知底层", (industryExposureMap.get("未知底层") ?? 0) + amount);
         continue;
@@ -189,6 +226,9 @@ Deno.serve(async (req) => {
       let disclosedWeight = 0;
       for (const h of items) disclosedWeight += Number(h.weight);
       disclosedWeight = Math.min(100, disclosedWeight);
+      console.debug(
+        `[xray-debug] edge 基金 ${code}(${fundName}) → 穿透成功，披露权重合计=${disclosedWeight}%，底层股票 ${items.length} 只`,
+      );
       for (const h of items) {
         const stockAmount = amount * (Number(h.weight) / 100);
         addStock(h.stock_code, h.stock_name, h.industry, stockAmount, {
@@ -247,6 +287,12 @@ Deno.serve(async (req) => {
     const topIndustry = industryExposure[0];
     const topThreePct = industryExposure.slice(0, 3).reduce((s, i) => s + i.pct, 0);
     const concentrationScore = Math.min(100, Math.round(topThreePct * 100) / 100);
+
+    console.debug(
+      `[xray-debug] edge 穿透汇总: 个股 ${topStocks.length} 只, 行业 ${industryExposure.length} 类, 未穿透基金 ${unmatched.length} 只`,
+    );
+    console.debug("[xray-debug] edge unmatched(未穿透明细):", unmatched);
+    console.debug("[xray-debug] edge industryExposure(含未知底层):", industryExposure);
 
     const alerts: { level: "critical" | "warning" | "info"; title: string; message: string }[] = [];
     if (topIndustry && topIndustry.pct > 25) {

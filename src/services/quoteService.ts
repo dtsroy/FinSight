@@ -104,10 +104,34 @@ export async function fetchFundTopHoldings(code: string): Promise<FundTopHolding
       console.warn(`[quote] ⚠️ 基金重仓获取失败（已舍弃）：${res.status} code=${code}，body=`, body);
       return null;
     }
-    const json = (await res.json()) as { holdings?: { code?: unknown; ccRate?: unknown }[] };
-    const holdings = (json.holdings ?? [])
-      .map((h) => ({ stock_code: String(h?.code ?? "").trim(), weight: Number(h?.ccRate) }))
-      .filter((h) => h.stock_code !== "" && Number.isFinite(h.weight) && h.weight > 0);
+    const rawText = await res.text();
+    console.debug(`[xray-debug] fetchFundTopHoldings(${code}) 原始响应文本:`, rawText);
+    let json: { holdings?: { code?: unknown; ccRate?: unknown }[] };
+    try {
+      json = JSON.parse(rawText) as { holdings?: { code?: unknown; ccRate?: unknown }[] };
+    } catch (parseErr) {
+      console.error(`[xray-debug] fetchFundTopHoldings(${code}) JSON.parse 失败:`, parseErr);
+      return null;
+    }
+    console.debug(`[xray-debug] fetchFundTopHoldings(${code}) 解析后 JSON 对象:`, json);
+    console.debug(
+      `[xray-debug] fetchFundTopHoldings(${code}) json.holdings 是否存在=${json.holdings != null}, 是否数组=${Array.isArray(json.holdings)}, 长度=${Array.isArray(json.holdings) ? json.holdings.length : "N/A"}`,
+    );
+    const mapped = (json.holdings ?? []).map((h) => {
+      const stock_code = String(h?.code ?? "").trim();
+      const weight = Number(h?.ccRate);
+      console.debug(
+        `[xray-debug]   条目 code=${JSON.stringify(h?.code)}(→"${stock_code}"), ccRate=${JSON.stringify(h?.ccRate)}(→${weight}, finite=${Number.isFinite(weight)})`,
+      );
+      return { stock_code, weight };
+    });
+    const holdings = mapped.filter(
+      (h) => h.stock_code !== "" && Number.isFinite(h.weight) && h.weight > 0,
+    );
+    console.debug(
+      `[xray-debug] fetchFundTopHoldings(${code}) 映射 ${mapped.length} 条 → 过滤后保留 ${holdings.length} 条:`,
+      holdings,
+    );
     if (holdings.length === 0) {
       // 货币基金等没有股票披露，或上游返回了脏数据 —— 同样按「不可穿透」舍弃。
       console.warn(`[quote] ⚠️ 基金 ${code} 无有效重仓披露（已舍弃）`);
