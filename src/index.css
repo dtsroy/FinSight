@@ -62,7 +62,7 @@
     --shadow-2xl: 0 10px 20px -4px rgba(0, 0, 0, 0.08);
     --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     --font-serif: 'Noto Sans SC', sans-serif;
-    --font-mono: 'JetBrains Mono', Menlo, monospace;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, 'Noto Sans SC', 'PingFang SC', monospace;
   }
 
   .dark {
@@ -145,5 +145,7 @@
 .scanner-line { position: absolute; z-index: 10; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, hsl(var(--foreground)), transparent); box-shadow: 0 0 18px hsl(var(--foreground) / .3); animation: scan 4s ease-in-out infinite; }
 .pulse-line { background: linear-gradient(90deg, transparent 0 3%, hsl(var(--foreground)) 3% 5%, transparent 5% 8%, hsl(var(--foreground)) 8% 9%, transparent 9% 13%, hsl(var(--foreground)) 13% 14%, transparent 14% 18%); background-size: 180px 2px; background-position: center; background-repeat: repeat-x; filter: drop-shadow(0 0 5px hsl(var(--foreground) / .2)); animation: pulse 7s linear infinite; }
 @keyframes scan { 0% { top: 0; opacity: 0; } 12%,88% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+@keyframes scan-horizontal { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes ecg-beat { 0% { stroke-dashoffset: 400; } 100% { stroke-dashoffset: 0; } }
 @keyframes pulse { from { background-position-x: 0; } to { background-position-x: -360px; } }
 @media (prefers-reduced-motion: reduce) { .scanner-line, .pulse-line { animation: none; } }

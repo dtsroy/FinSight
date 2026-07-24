@@ -41,6 +41,7 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as strin
  */
 export async function streamChatMessage(
   message: string,
+  riskState: Record<string, unknown> | null,
   handlers: ChatStreamHandlers,
   signal?: AbortSignal,
 ): Promise<void> {
@@ -58,7 +59,7 @@ export async function streamChatMessage(
       "apikey": SUPABASE_ANON_KEY,
       "Accept": "text/event-stream",
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, riskState }),
     signal,
   });
 

@@ -110,10 +110,10 @@ export default {
                 '2xl': 'var(--shadow-2xl)',
             },
             fontFamily: {
-                sans: ["var(--font-sans)"],
-                serif: ["var(--font-serif)"],
-                mono: ["var(--font-mono)"],
-            },
+          sans: ["var(--font-sans)"],
+          serif: ["var(--font-serif)"],
+          mono: ["var(--font-mono)"],
+        },
             keyframes: {
                 "accordion-down": {
                     from: { height: "0" },

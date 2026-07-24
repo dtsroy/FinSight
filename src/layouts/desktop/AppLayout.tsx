@@ -33,12 +33,13 @@ export default function AppLayout() {
           ))}
         </nav>
         <div className="hidden flex-col gap-2 border-t border-border p-4 md:flex">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">主题设置</span>
-            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="h-8 w-8 text-muted-foreground hover:bg-secondary hover:text-foreground">
-              {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            </Button>
-          </div>
+          <button 
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            {theme === "dark" ? "切换为浅色模式" : "切换为深色模式"}
+          </button>
           <AccountMenu email={identity.email} isAnonymous={identity.isAnonymous} userId={identity.userId} />
         </div>
       </aside>
