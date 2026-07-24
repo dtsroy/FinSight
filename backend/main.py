@@ -43,11 +43,11 @@ app.add_middleware(
         "http://localhost:5173",              # Vite default dev port
         "http://localhost:4173",              # Vite preview port
         "http://localhost:3000",              # alternative dev port
-        "http://55b599cd.r7.cpolar.top",     # cpolar intranet tunnel (http)
-        "https://55b599cd.r7.cpolar.top",    # cpolar intranet tunnel (https)
     ],
-    # 前端预览域名（如 https://id--xxx.superun.yun）每次部署都会变，用正则统配整个 superun.yun 子域。
-    allow_origin_regex=r"https://.*\.superun\.yun",
+    # cpolar 隧道域名每次重启都会变（如 https://12471763.r7.cpolar.top），
+    # 前端预览域名也每次部署都会变（如 https://id--xxx.superun.yun），
+    # 用正则统配，不再硬编码。
+    allow_origin_regex=r"https://.*\.(cpolar\.top|superun\.yun)",
     allow_methods=["GET"],
     allow_headers=["*"],
 )
