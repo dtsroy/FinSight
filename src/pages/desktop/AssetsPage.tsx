@@ -59,6 +59,80 @@ function getPlatformIcon(platform: string | undefined) {
   return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
 }
 
+<<<<<<< local
+||||||| base
+import ccbLogo from "@/assets/bank-logos/ccb.svg";
+import cebLogo from "@/assets/bank-logos/ceb.svg";
+import cibLogo from "@/assets/bank-logos/cib.svg";
+import citicLogo from "@/assets/bank-logos/citic.svg";
+import cmbLogo from "@/assets/bank-logos/cmb.svg";
+import hsbcLogo from "@/assets/bank-logos/hsbc.svg";
+import scbLogo from "@/assets/bank-logos/scb.svg";
+import spbLogo from "@/assets/bank-logos/spb.svg";
+
+function getPlatformIcon(platform: string | undefined) {
+  if (!platform) return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+  
+  const name = platform.toLowerCase();
+  if (name.includes("招商银行")) return <img src={cmbLogo} alt="招商银行" className="size-4 shrink-0" />;
+  if (name.includes("建设银行")) return <img src={ccbLogo} alt="建设银行" className="size-4 shrink-0" />;
+  if (name.includes("中信银行")) return <img src={citicLogo} alt="中信银行" className="size-4 shrink-0" />;
+  if (name.includes("光大银行")) return <img src={cebLogo} alt="光大银行" className="size-4 shrink-0" />;
+  if (name.includes("兴业银行")) return <img src={cibLogo} alt="兴业银行" className="size-4 shrink-0" />;
+  if (name.includes("汇丰银行")) return <img src={hsbcLogo} alt="汇丰银行" className="size-4 shrink-0" />;
+  if (name.includes("渣打银行")) return <img src={scbLogo} alt="渣打银行" className="size-4 shrink-0" />;
+  if (name.includes("浦发银行")) return <img src={spbLogo} alt="浦发银行" className="size-4 shrink-0" />;
+  
+  return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+}
+
+=======
+import abcLogo from "@/assets/bank-logos/abc.svg";
+import alipayLogo from "@/assets/bank-logos/alipay.svg";
+import bocLogo from "@/assets/bank-logos/boc.svg";
+import bocomLogo from "@/assets/bank-logos/bocom.svg";
+import ccbLogo from "@/assets/bank-logos/ccb.svg";
+import cebLogo from "@/assets/bank-logos/ceb.svg";
+import cibLogo from "@/assets/bank-logos/cib.svg";
+import citicLogo from "@/assets/bank-logos/citic.svg";
+import cmbLogo from "@/assets/bank-logos/cmb.svg";
+import hsbcLogo from "@/assets/bank-logos/hsbc.svg";
+import icbcLogo from "@/assets/bank-logos/icbc.svg";
+import pinganLogo from "@/assets/bank-logos/pingan.svg";
+import scbLogo from "@/assets/bank-logos/scb.svg";
+import spbLogo from "@/assets/bank-logos/spb.svg";
+import wechatLogo from "@/assets/bank-logos/wechat.svg";
+
+// 天天基金暂用官方 App 图标 CDN URL（用户上传，Superun CDN 长期稳定）；后续如有 SVG 版本可换成本地文件。
+const TTJJ_LOGO = "https://b.ux-cdn.com/uxarts/20260724/1946e4923f654e58ba3d4fe374930d4d.png";
+
+function getPlatformIcon(platform: string | undefined) {
+  if (!platform) return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+  
+  const name = platform.toLowerCase();
+  if (name.includes("招商银行")) return <img src={cmbLogo} alt="招商银行" className="size-4 shrink-0" />;
+  if (name.includes("建设银行")) return <img src={ccbLogo} alt="建设银行" className="size-4 shrink-0" />;
+  if (name.includes("中信银行")) return <img src={citicLogo} alt="中信银行" className="size-4 shrink-0" />;
+  if (name.includes("同花顺")) return <img src={cebLogo} alt="同花顺" className="size-4 shrink-0" />;
+  if (name.includes("兴业银行")) return <img src={cibLogo} alt="兴业银行" className="size-4 shrink-0" />;
+  if (name.includes("汇丰银行")) return <img src={hsbcLogo} alt="汇丰银行" className="size-4 shrink-0" />;
+  if (name.includes("渣打银行")) return <img src={scbLogo} alt="渣打银行" className="size-4 shrink-0" />;
+  if (name.includes("浦发") || name.includes("浦东发展")) return <img src={spbLogo} alt="浦发银行" className="size-4 shrink-0" />;
+  if (name.includes("工商银行") || name.includes("工行")) return <img src={icbcLogo} alt="中国工商银行" className="size-4 shrink-0" />;
+  if (name.includes("中国银行") || name.includes("中行")) return <img src={bocLogo} alt="中国银行" className="size-4 shrink-0" />;
+  if (name.includes("农业银行") || name.includes("农行")) return <img src={abcLogo} alt="农业银行" className="size-4 shrink-0" />;
+  if (name.includes("交通银行") || name.includes("交行")) return <img src={bocomLogo} alt="交通银行" className="size-4 shrink-0" />;
+  if (name.includes("平安")) return <img src={pinganLogo} alt="平安" className="size-4 shrink-0" />;
+  if (name.includes("汇丰")) return <img src={hsbcLogo} alt="汇丰银行" className="size-4 shrink-0" />;
+  if (name.includes("渣打")) return <img src={scbLogo} alt="渣打银行" className="size-4 shrink-0" />;
+  if (name.includes("天天基金")) return <img src={TTJJ_LOGO} alt="天天基金" className="size-4 shrink-0 rounded-sm" />;
+  if (name.includes("蚂蚁") || name.includes("支付宝")) return <img src={alipayLogo} alt="支付宝" className="size-4 shrink-0" />;
+  if (name.includes("微信")) return <img src={wechatLogo} alt="微信" className="size-4 shrink-0" />;
+  
+  return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+}
+
+>>>>>>> remote
 const PAGE_SIZE = 20;
 const EMPTY_FILTERS: AssetListFilters = { search: "", category: null, platform: null, source: null, currency: null };
 
@@ -220,7 +294,8 @@ export default function AssetsPage() {
                 code: "portfolio",
                 changeAmount: portfolioChange.data.changeAmount,
                 changePct: portfolioChange.data.changePct,
-                currency: "CNY",
+                        {getPlatformIcon(asset.platform)}
+                        <span>{asset.platform || "—"}</span>
                 asOf: new Date().toISOString(),
               }}
             />
@@ -294,8 +369,7 @@ export default function AssetsPage() {
                     <td className="px-4 py-3 text-muted-foreground">{CATEGORY_LABEL[asset.category]}</td>
                     <td className="px-4 py-3 text-muted-foreground">
                       <div className="flex items-center gap-2">
-                        {getPlatformIcon(asset.platform)}
-                        <span>{asset.platform || "—"}</span>
+                        {asset.platform ? <PlatformCell platform={asset.platform} /> : "—"}
                       </div>
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{asset.code ?? "—"}</td>

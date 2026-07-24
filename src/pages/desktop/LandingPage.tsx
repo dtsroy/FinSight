@@ -23,8 +23,8 @@ const highlightColors = [
 ];
 
 const mockPieData = [
-  { name: "贵州茅台", value: 18.5 },
-  { name: "其他资产", value: 81.5 },
+  { name: "贵州茅台", value: 48.7 },
+  { name: "其他资产", value: 51.3 },
 ];
 const COLORS = ["hsl(var(--foreground))", "hsl(var(--muted))"];
 
