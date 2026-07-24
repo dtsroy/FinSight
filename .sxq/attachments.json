@@ -1,7 +1,453 @@
 {
   "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
-  "pulledAt": "2026-07-24T04:50:26.669Z",
+  "pulledAt": "2026-07-24T05:47:08.280Z",
   "tree": {
+    ".qoder": {
+      "repowiki": {
+        "en": {
+          "content": {
+            "API Reference": {
+              "Edge Functions API": {
+                "Data Processing Functions.md": {
+                  "rowKey": "3c191871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588561",
+                  "hash": "7aa1cf5c0625a4343cec815bc34a4a55cdfb47d0aa94ae19c7b2af34f0f28ab5"
+                },
+                "Currency Services.md": {
+                  "rowKey": "042b1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588550",
+                  "hash": "561d65f61ca90f766b48eb493bb60528706a7a92d03007d4db8b6e308ec6bb94"
+                },
+                "Utility Functions.md": {
+                  "rowKey": "4d871871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588589",
+                  "hash": "d4149d9bc0320948ae7ab42eb98bd3e502218a861a91880a475931f47273eca3"
+                },
+                "Collaboration Services.md": {
+                  "rowKey": "b9ec1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588540",
+                  "hash": "f8c5b3e9c5e6579055d17aabb4e9fc33037368f6cb720467a7ec74f66d7b4939"
+                },
+                "File Storage Services.md": {
+                  "rowKey": "f5fa1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588580",
+                  "hash": "cd4f6552d566de23fa7929a37db3087389106712cc12b3d64cb8ee0b5929bf4f"
+                },
+                "Edge Functions API.md": {
+                  "rowKey": "84c31871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588571",
+                  "hash": "f3f32432f0b374bf4bda728f9872e5b349e61d7d55dc468636269f7bde02f648"
+                },
+                "AI Integration Services.md": {
+                  "rowKey": "8d551871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588522",
+                  "hash": "63910acc7f9801dac362c5eafc9777043e6bb09aa0217399c4fa485cf5a7a086"
+                },
+                "Analytics & Reporting Functions.md": {
+                  "rowKey": "23311871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588532",
+                  "hash": "773e4bfca740f7ffcd3f4de14e3c5f24c18e0020238145ff1277d8fa8bc16e71"
+                }
+              },
+              "File Processing API.md": {
+                "rowKey": "b4331871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588599",
+                "hash": "cfb016094858871dc388df61cdf06390898813d967fa25b52e4cd441f38a0503"
+              },
+              "Authentication API.md": {
+                "rowKey": "905e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588512",
+                "hash": "8bb1981898016350990170a270ca838363b706d30534cc766214c7740e546661"
+              },
+              "Real-time APIs.md": {
+                "rowKey": "95571871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588608",
+                "hash": "b3a20efcd9242c043ac9f7a25d6e52bcde53f2ddfcc3a1da2103f4231a70e562"
+              },
+              "API Reference.md": {
+                "rowKey": "a3131871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588502",
+                "hash": "2bb5aa38dc494e6c1ae98547506cbe03653445566aac1addc80107bb28402f11"
+              }
+            },
+            "Data Models": {
+              "Data Models.md": {
+                "rowKey": "96671871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588890",
+                "hash": "68f2689fc8618f21906789776bb5a70f793b86d0925967ec3734eb259e887ea3"
+              },
+              "Database Schema": {
+                "Core Entities.md": {
+                  "rowKey": "81e41871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588916",
+                  "hash": "7ab4c2ee348707924febb7d0d202d519c4c10469a6938ce97ec2581c444f001d"
+                },
+                "Import & Processing Tables.md": {
+                  "rowKey": "4acc1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588933",
+                  "hash": "332139ac3c4ba010759acd27cc4ba35cfc5a4ccbdf7713d8c48cdf6daad16599"
+                },
+                "Database Schema.md": {
+                  "rowKey": "68701871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588925",
+                  "hash": "06e26c543591e17af153a566efb6bfad310790abf0b71618ec4642a64d83788f"
+                },
+                "Security & RLS Policies.md": {
+                  "rowKey": "2bf51871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588943",
+                  "hash": "405af77f7d4168a762f829c99bec38a44f815d2beff04cdabef3912a95535d23"
+                },
+                "Analytics & Reports Tables.md": {
+                  "rowKey": "414a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588906",
+                  "hash": "834ae15ad56055738684ef5eb13a0955caedbb994ec2b2af4ba3d0b9c921b363"
+                }
+              },
+              "TypeScript Type Definitions.md": {
+                "rowKey": "cfcd1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588953",
+                "hash": "b3a69e12933a08c14a9ef575346d5dbeb966d0b85755012f828d999b6c57805e"
+              },
+              "Data Transformations & Utilities.md": {
+                "rowKey": "ed981871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588898",
+                "hash": "2917faa72a93419fe3180f2e7d551a817c0b69a0910379b75f5c0de450d1b9e5"
+              }
+            },
+            "Core Features": {
+              "Import System": {
+                "Import System.md": {
+                  "rowKey": "aba01871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588714",
+                  "hash": "0bc771ef28bc9442fc3b3528377662ba762005cb6976d53dfd1c2f3069715000"
+                },
+                "Demo Portfolio Loader.md": {
+                  "rowKey": "5a461871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588697",
+                  "hash": "8c7523bb97637704c3e7b6d7f0ca43dec5506e3c2c7ec2ba1b72e534f9eed7b6"
+                },
+                "Import Pipeline & Review.md": {
+                  "rowKey": "77441871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588706",
+                  "hash": "b1bb202143cdd5e39302a42596821d33328bf2c4d02d9731f73627f4f766f547"
+                },
+                "OCR Document Processing.md": {
+                  "rowKey": "60d51871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588730",
+                  "hash": "8d0efe0f074745395ef49adc4b2f45ca58854f16ae1187e326e960b58d36610a"
+                },
+                "Manual Asset Entry.md": {
+                  "rowKey": "60c61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588722",
+                  "hash": "0ef8a85cd405d0f80c416903f97a104eabe93ce80a049919bd6c430971ac02b4"
+                },
+                "CSV Import Flow.md": {
+                  "rowKey": "dd011871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588688",
+                  "hash": "ca0e50862bb276b9a57851e9a4d7cdee43b05f0dcaf84f00588db093a9e78210"
+                }
+              },
+              "Advanced Analysis": {
+                "Advanced Analysis.md": {
+                  "rowKey": "660b1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588625",
+                  "hash": "aa07886317b5956323a76b2dab62db0ecf37135f62cdea6da3cf56042dd6cc41"
+                },
+                "X-Ray Analysis.md": {
+                  "rowKey": "d6571871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588643",
+                  "hash": "ed310f40fbabb11d6fb903b47caa7effc2c9f43b01464ba99bc403a3b38db61e"
+                },
+                "Stress Testing Engine.md": {
+                  "rowKey": "67e91871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588634",
+                  "hash": "f691caec34785d7f937d314624908d9ea95c0262db04b7f710ba0a1f6853d07d"
+                }
+              },
+              "Analytics Dashboard.md": {
+                "rowKey": "557d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588659",
+                "hash": "d277e8bb8d4be9d6f63bf1e4d93c2c3515e402cf7fe5d27ea4c24bd8cf0fe3a5"
+              },
+              "Collaboration Features.md": {
+                "rowKey": "9f5d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588667",
+                "hash": "ab62fd0caae43caf54d2daeb44849960ab2da380e8228ea6b843d14ddad8574d"
+              },
+              "AI Integration.md": {
+                "rowKey": "7b8b1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588651",
+                "hash": "a0e124ddc739da8f7c52d2fd835001e07953255e29ea3d63a2f4951b978f0d2b"
+              },
+              "Core Features.md": {
+                "rowKey": "e7de1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588679",
+                "hash": "34ba06a3b94a6292f30a251a6805c3cb9eb4941b7c70ba7beaa3cc41d4a59a10"
+              },
+              "Portfolio Management": {
+                "Real-time Value Updates.md": {
+                  "rowKey": "f2801871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588771",
+                  "hash": "1f49affb72a023aa614bd22b32456db3f077c0a75d6f761c4ee10c8482e93c20"
+                },
+                "Asset Tracking and Categorization.md": {
+                  "rowKey": "63651871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588739",
+                  "hash": "0d121c68f810aacb2adf3699d379faf9c4a7624d3e6d8d560300741fb42174cc"
+                },
+                "Batch Operations and Bulk Management.md": {
+                  "rowKey": "924c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588747",
+                  "hash": "f4a1fcaba74a3e0bc043bead023a50c48df7df14f98d5806a979d6a6d48e98f1"
+                },
+                "Multi-currency Support.md": {
+                  "rowKey": "8cc61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588756",
+                  "hash": "908b49c3ea3b1927e66af487f1beae0ae9c16d74e1a5fc3cb286496910c5b78b"
+                },
+                "Portfolio Management.md": {
+                  "rowKey": "94fb1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588763",
+                  "hash": "ddb45cd4258d6970d3c93a666c18b07b5575eba25638ef3cf8904460ff3e47bb"
+                }
+              }
+            },
+            "Development Guide.md": {
+              "rowKey": "dce81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588970",
+              "hash": "fdd16cfe05808864d8be290234dc4479820ec9124f31865102dbf3c066419ee7"
+            },
+            "Technical Implementation": {
+              "Development Patterns.md": {
+                "rowKey": "05371871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589096",
+                "hash": "6033cf7fa7822a061052fbe4b0b409e5127fad1e74cf40992a7c661d0062a83d"
+              },
+              "Backend Integration": {
+                "Edge Functions Development": {
+                  "Storage Integration Functions.md": {
+                    "rowKey": "12c11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589068",
+                    "hash": "dfd8c54397ccf39fb7ea66173afc4d2c97ff52891f1b8876cdb7eda06bf33ccd"
+                  },
+                  "AI Integration Functions.md": {
+                    "rowKey": "48f91871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589015",
+                    "hash": "ea92e080c4180d1bd609202e65e3852be749cc5789aed4ad75d9b658d87826f7"
+                  },
+                  "Financial Computation Functions.md": {
+                    "rowKey": "e6091871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589042",
+                    "hash": "668cfd2634fcab93e2459b043d9f2b76abbcb0e945e03a5fb1c6e970e3f71cd9"
+                  },
+                  "Report Generation Functions.md": {
+                    "rowKey": "4d831871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589059",
+                    "hash": "4613a9041506ab9b50f9361c68c4c7e441691994ac7a8448d5b140d453cf5259"
+                  },
+                  "Data Processing Functions.md": {
+                    "rowKey": "33911871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589025",
+                    "hash": "77702732a9ac9e70a41f2d070511d6a06720761cbc87faf501ddd73f513cdd68"
+                  },
+                  "Function Architecture & Patterns.md": {
+                    "rowKey": "cc251871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589050",
+                    "hash": "19f34fd684121ae6081a0aa9e9993d6252d5de3600d3f93d31ea5aa0392684cc"
+                  },
+                  "Edge Functions Development.md": {
+                    "rowKey": "7cd81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589033",
+                    "hash": "23eac79023f7cc76f525c3bc290b8ccd56cfd6900f92defeeb2d037a74b4d17a"
+                  }
+                },
+                "Database Schema Design.md": {
+                  "rowKey": "b65a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589006",
+                  "hash": "2035c48929ae97282f19b9159368e6ca04cb696640f4abb89cdf25805a03f273"
+                },
+                "Real-time Subscriptions.md": {
+                  "rowKey": "f3001871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589077",
+                  "hash": "47c4fb93a401372f47867cf3539aa9b59098755f8e5bee11d97fe2260e5ce0f3"
+                },
+                "Backend Integration.md": {
+                  "rowKey": "fc541871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588998",
+                  "hash": "88a1a953cf7e99dbf015b7617caa6db66893fec6725eff14c48fd6b97288d11a"
+                },
+                "Supabase Client Setup.md": {
+                  "rowKey": "36201871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589086",
+                  "hash": "78decb0bcea0a7d03d8a91a542552ca73805ab5ec491b452bbea97c5c4e1f53b"
+                }
+              },
+              "Frontend Architecture": {
+                "Routing and Navigation.md": {
+                  "rowKey": "88821871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589125",
+                  "hash": "55b8431ba145818db142bf3d26226c7ec0fd26229cebfacf2ba68f47cf2bd4a4"
+                },
+                "Frontend Architecture.md": {
+                  "rowKey": "217f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589115",
+                  "hash": "9fabe835ed93c0392d578cc1e84e5720d4772c27fdad79d38f9ecfb9ed08ea50"
+                },
+                "State Management.md": {
+                  "rowKey": "2c9d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589134",
+                  "hash": "e5f123999bab307e6ee7fcea053215cfb5e0c245125ea02c8ed996da0dfb9fef"
+                },
+                "Component System.md": {
+                  "rowKey": "d3bc1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589106",
+                  "hash": "ca4cccee651a1cef1d97cb16255258f182ad392a16fdc46c58096decef7b4df9"
+                }
+              },
+              "Technical Implementation.md": {
+                "rowKey": "7b2d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589142",
+                "hash": "be1f3febe5a81165451a00b086eaa4136ff0a754c8991aee18bf5b334bba2d21"
+              },
+              "API Layer Design.md": {
+                "rowKey": "8bee1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588986",
+                "hash": "a91a781b6fd4e5e10fb05d560afbb874b0c1d4e16c76e7415219fb078ad5879f"
+              }
+            },
+            "UI Components": {
+              "UI Components.md": {
+                "rowKey": "1dd71871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589177",
+                "hash": "c1bb57a0eefc38a8f3b0d56eeca44ddb98722b22b8443d3163cc038c86ec2623"
+              },
+              "UI Primitives": {
+                "Data Display Components.md": {
+                  "rowKey": "0e621871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589193",
+                  "hash": "ad2c4226872fc92eb33b47b8f1cbc9193400119a6583362b40d723e6ddebd387"
+                },
+                "Button Component.md": {
+                  "rowKey": "4a931871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589185",
+                  "hash": "176a2dfc67a1da0a648927ced6afdd19ce606e2094cc546ea2326f1e47d09e5e"
+                },
+                "Layout & Utility Components.md": {
+                  "rowKey": "f5241871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589229",
+                  "hash": "770cd7b2cbec25b62abd3ed753befd3b0ddcc4e9272a2ff533d03cf293bd52d6"
+                },
+                "Dialog & Modal Components.md": {
+                  "rowKey": "67681871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589202",
+                  "hash": "94e6fec567330bebc204d428948abdc36a2026dc457abac1a88ab652e326b594"
+                },
+                "Feedback & Indicator Components.md": {
+                  "rowKey": "89381871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589211",
+                  "hash": "15ace1e5fee595a6fb2a0cf861def7753b2528ef4302f62d6b28df439d634ec0"
+                },
+                "Form & Input Components.md": {
+                  "rowKey": "3d441871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589220",
+                  "hash": "5732ebcbf5f88a0cf5d4117042df73d5e5682901c16368b6038be0c4c39ed03f"
+                },
+                "Navigation Components.md": {
+                  "rowKey": "772e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589239",
+                  "hash": "c85ed10555a3b9c7935d29a65d25f0f685ff5f63135c5bb2d2123f62cfe2b64c"
+                },
+                "UI Primitives.md": {
+                  "rowKey": "6ad71871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589248",
+                  "hash": "64aaa4f4078d1f1d02191f36cce7e05849fa6a3d32c5fac184f6ede2adac3530"
+                }
+              },
+              "Domain-Specific Components.md": {
+                "rowKey": "9b7c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589151",
+                "hash": "a9bb7a4e5fd1ea8aa42b982b5f3dfb78266668d9da38e1f5c7ba7d323f641ae1"
+              },
+              "Shared UI Elements.md": {
+                "rowKey": "c9d51871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589168",
+                "hash": "ccdae2fb9117faeae3d941313af5223863b8246a93339ed2c2a34edd594f57db"
+              },
+              "Import Flow Components.md": {
+                "rowKey": "2ce11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589160",
+                "hash": "6205dae2c276345d8d5065bdc8a21d64c5a22be96e6cd5d1fc53c1a38c43f86a"
+              }
+            },
+            "Getting Started.md": {
+              "rowKey": "a52c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588978",
+              "hash": "b0f879bce417019b33b42b240b0a519f33630ad389e11838b86ae517ac82eb27"
+            },
+            "Deployment and Operations.md": {
+              "rowKey": "69361871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588961",
+              "hash": "7201608ee70ce3bc4d2622124d474579f16e0f18f81fd68b52b137c04cfb3d50"
+            },
+            "Architecture Overview.md": {
+              "rowKey": "1eb41871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869588617",
+              "hash": "dd33be5583f2270fc2a2393b8c67c25bf235c0af18f32743b84964401b9020f5"
+            }
+          },
+          "meta": {
+            "repowiki-metadata.json": {
+              "rowKey": "6a351871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589256",
+              "hash": "05c9fd1b29c112d0579a99e302a1bf6af727c04e7fd708c8a09ef35be32df738"
+            }
+          }
+        },
+        "knowledge": {
+          "en": {
+            "Business Glossary": {
+              "Business Glossary.md": {
+                "rowKey": "4eb81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589274",
+                "hash": "96ea551ae1439c5dabdba2b21f27d8abe7da87e5c4b59b794ffc16b742cbaf2f"
+              }
+            },
+            "Financial X-Ray Desktop App (Vite + React + Shadcn)": {
+              "Financial X-Ray Desktop Frontend (React + Vite)": {
+                "_module.yaml": {
+                  "rowKey": "6c6a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589364",
+                  "hash": "b08d66d716fe4e02422b0b955ce6e0f9a54afd466caabc3063398ef8540c90ff"
+                },
+                "overview.md": {
+                  "rowKey": "da0e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589348",
+                  "hash": "15190bd575007776fc18562a7b6a7bde665d7faec0fee3732a78c95029ea530b"
+                },
+                "tech_stack.md": {
+                  "rowKey": "8d1b1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589356",
+                  "hash": "5609db93ad87c28b70e1ebc21bfab845d3cb33f1f76b0c59b07761b4c699506f"
+                },
+                "coding_conventions.md": {
+                  "rowKey": "7b7c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589340",
+                  "hash": "a14bfe7f201da198a7cc62cea89456d4f56d77c1b12e0aefbdd9c3ba98349386"
+                },
+                "architecture_design.md": {
+                  "rowKey": "dfd21871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589332",
+                  "hash": "b24dcfe63ef81ce0ee074f51e7c7e2ad0063a969f73b93d0cc2b6b53c3e1c2c1"
+                }
+              },
+              "tech_stack.md": {
+                "rowKey": "1c311871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589380",
+                "hash": "dc1f6d3e34bd06a1c9bfcb1befbc9d34a9320644c103e170c81a60663a4bad8b"
+              },
+              "coding_conventions.md": {
+                "rowKey": "95151871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589324",
+                "hash": "435a7e442ec29871fc26b04bb60a437e36bee8907e5ca45b9a819c9e7be0dd99"
+              },
+              "_module.yaml": {
+                "rowKey": "65481871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589395",
+                "hash": "9414fbfecfed54ca46f3237867ad91f78242dd7e87015d950f980695e9be2e6e"
+              },
+              "architecture_design.md": {
+                "rowKey": "eaac1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589317",
+                "hash": "b049870eb9804844eb6dbac4f30f9283e4606cc0f3f5f884c84afd6ae3fca622"
+              },
+              "unique_setup_and_commands.md": {
+                "rowKey": "d7741871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589387",
+                "hash": "4e97571c5598807617900e4d2dfaeadf7cf959bdc0c24dafe3816c6b5fc92fdf"
+              },
+              "overview.md": {
+                "rowKey": "fe521871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589372",
+                "hash": "856f1c42cc8facd447975ee8eaaa4a1db46ef17155a95eddfba4ec8ee4dc03fe"
+              }
+            },
+            "Vite + React SPA Build Pipeline": {
+              "Vite + React SPA Build Pipeline.md": {
+                "rowKey": "e59a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589450",
+                "hash": "e9f2b60dce0e43211a0b2f69a92de3e9a203417dddeece92164afc07f377e73a"
+              }
+            },
+            "_index.yaml": {
+              "rowKey": "9fed1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589457",
+              "hash": "51598247806ef9be711d18c2e07f6b9e65fd1dae4382536b02ffb1c24e6015df"
+            },
+            "Qiniu Cloud Object Storage (SDK present)": {
+              "Qiniu Cloud Object Storage (SDK present).md": {
+                "rowKey": "6ee51871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589418",
+                "hash": "568c2f10e89b8ef938bb02f80204b4f0cb99b6de5a777cf88017bd2cefa6e28c"
+              }
+            },
+            "Error Handling Strategy in Financial X-Ray Desktop App": {
+              "Error Handling Strategy in Financial X-Ray Desktop App.md": {
+                "rowKey": "d4cb1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589309",
+                "hash": "66706b1041d1d8f7fc875d2a544fb40168f76d2301d67632bf16682d399b8735"
+              }
+            },
+            "Tailwind + Shadcn_ui Design System with CSS Variables Theming": {
+              "Tailwind + Shadcn_ui Design System with CSS Variables Theming.md": {
+                "rowKey": "01781871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589442",
+                "hash": "a89cf73e23989593c1a43e0da7dda6d9a82591139382bdbbac5b9916c749fbae"
+              }
+            },
+            "pnpm-based dependency management with caret versioning": {
+              "pnpm-based dependency management with caret versioning.md": {
+                "rowKey": "9af11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589411",
+                "hash": "76f7c5c4f293586a34c73d16e45c9c40d7d8adde0370c0c4ac51f81f69d0534c"
+              }
+            },
+            "No centralized logging system — ad-hoc console calls": {
+              "No centralized logging system — ad-hoc console calls.md": {
+                "rowKey": "fbff1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589403",
+                "hash": "c69291f366e29999b361ac117014bb66bf52339a1833861cd1030f80991bc4f2"
+              }
+            },
+            "Superun AI Gateway (Vision + Reasoning models)": {
+              "Superun AI Gateway (Vision + Reasoning models).md": {
+                "rowKey": "be8d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589434",
+                "hash": "7f67a7995eee0c73f6ab902d8fd764e85db5851942cc7b866cd84c6e781ff3cd"
+              }
+            },
+            "Environment & Build Configuration (Vite + Supabase)": {
+              "Environment & Build Configuration (Vite + Supabase).md": {
+                "rowKey": "de4f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589301",
+                "hash": "65b1052ea3c658dc53deb0eb8bd9346795a221170e34eaaa425baa05882cb2bb"
+              }
+            },
+            "Supabase BaaS (Auth + Edge Functions + Storage)": {
+              "Supabase BaaS (Auth + Edge Functions + Storage).md": {
+                "rowKey": "66471871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589426",
+                "hash": "0cfd79effdb0d2f3e3e5c31c5a6253c14e0f31e740db53f0049f4529e42ee22c"
+              }
+            }
+          }
+        }
+      }
+    },
     "src": {
       "components": {
         "ui": {
@@ -388,8 +834,8 @@
             "hash": "789da4a33a972dc87056bece3abc14be14f196b288033cf6085bc6db7a3784cb"
           },
           "LandingPage.tsx": {
-            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784868625741",
-            "hash": "9dab53a57ccf44c374197f6daea848271bb2ba617ccc84948b6b0bd96f10bd8b"
+            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869748546",
+            "hash": "717524eaf716ecd29aee0d04fc0d0b6b380ae72237079fdfc808fb33b7e5080a"
           },
           "AssetsPage.tsx": {
             "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784808991468",
@@ -627,8 +1073,8 @@
       "hash": "e5e9a17eae49456f49f1981afb53798c0723e01fabf154445e71fb67ab5918d9"
     },
     "index.html": {
-      "rowKey": "b3811871421052944388-ca925de34ad74326a353f4a972da03b4_at1784777153530",
-      "hash": "3e27e6b9536a0da1ccbf80bc5b57947895db048f26464d6757c78dd9ddb9fbb5"
+      "rowKey": "b3811871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869184708",
+      "hash": "50c369e0b31de9ea9749d4780db111c523d516069bb6dc0ad8e619a27663ec81"
     },
     "tsconfig.json": {
       "rowKey": "4856pre_at1766666917314",
@@ -659,9 +1105,12 @@
       "hash": "1a270cb8020d1fa879262423b9c222fa38d94b830ec61164a46b558ea9d2a526"
     },
     "tailwind.config.js": {
-      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784779067295",
-      "hash": "2aabdb2cb596ed004dce0cf18a756586b6d9af922f811772006731da7cbafa4a"
+      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589473",
+      "hash": "b6c57cbfd04ddac65996d13b01b8a7af1159187cff5f2351d74ca502b4030796"
     }
   },
-  "conflicts": []
+  "conflicts": [
+    "src/pages/desktop/LandingPage.tsx",
+    "tailwind.config.js"
+  ]
 }
