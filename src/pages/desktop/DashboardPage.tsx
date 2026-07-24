@@ -17,52 +17,55 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
 function EcgAnimation({ score }: { score: number }) {
-  // 分数越高越健康（心跳慢，约 3.5s）；分数越低越危险（心跳快，约 1.2s）
-  const duration = Math.max(1.2, (score / 100) * 3.5).toFixed(2);
+  // score 0 -> 密集波峰 (patternWidth 80px)
+  // score 100 -> 稀疏波峰 (patternWidth 400px)
+  const patternWidth = Math.floor(80 + (score / 100) * 320);
+  
+  // 保持线速度一致（例如 100px / 秒）
+  const duration = (patternWidth / 100).toFixed(2);
+  const animationName = `slide-ecg-${patternWidth}`;
 
   return (
     <div className="relative h-12 flex-1 overflow-hidden">
-      <svg className="absolute inset-0 h-full w-full">
-        <defs>
-          <pattern id="ecg-pattern-base" width="400" height="48" patternUnits="userSpaceOnUse">
-            <path 
-              d="M0,24 L170,24 L186,24 L189,11 L194.5,43 L201.5,-7 L207.5,32 L213,24 L223.5,24 L400,24" 
-              fill="none" 
-              stroke="hsl(var(--border))" 
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </pattern>
-          <pattern id="ecg-pattern-mask" width="400" height="48" patternUnits="userSpaceOnUse">
-            <path 
-              d="M0,24 L170,24 L186,24 L189,11 L194.5,43 L201.5,-7 L207.5,32 L213,24 L223.5,24 L400,24" 
-              fill="none" 
-              stroke="#fff" 
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </pattern>
-          <mask id="ecg-mask-pattern">
-            <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-pattern-mask)" />
-          </mask>
-        </defs>
-        
-        {/* 底层暗色线 */}
-        <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-pattern-base)" />
-      </svg>
-
-      {/* 扫描的光带（通过 scan-horizontal 动画从左到右移动） */}
+      <style>{`
+        @keyframes ${animationName} {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-${patternWidth}px); }
+        }
+      `}</style>
+      
       <div 
-        className="absolute top-0 left-0 h-full w-[80%] opacity-80 mix-blend-plus-lighter"
+        className="absolute top-0 left-0 h-full"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, hsl(var(--warning)) 30%, hsl(var(--info)) 50%, hsl(var(--success)) 70%, transparent 100%)",
-          animation: `scan-horizontal ${duration}s linear infinite`,
-          maskImage: "url(#ecg-mask-pattern)",
-          WebkitMaskImage: "url(#ecg-mask-pattern)",
+          width: `calc(100% + ${patternWidth}px)`,
+          animation: `${animationName} ${duration}s linear infinite`
         }}
-      />
+      >
+        <svg className="h-full w-full">
+          <defs>
+            <linearGradient id="rainbowEcg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="hsl(var(--warning))" />
+              <stop offset="50%" stopColor="hsl(var(--info))" />
+              <stop offset="100%" stopColor="hsl(var(--success))" />
+            </linearGradient>
+            
+            <pattern id="ecg-flat" width={patternWidth} height="48" patternUnits="userSpaceOnUse">
+              <path d={`M43,24 L${patternWidth},24`} fill="none" stroke="hsl(var(--border))" strokeWidth="2" strokeLinecap="round" />
+            </pattern>
+            
+            <pattern id="ecg-peak" width={patternWidth} height="48" patternUnits="userSpaceOnUse">
+              <path d="M0,24 L16,24 L19,11 L24.5,43 L31.5,-7 L37.5,32 L43,24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </pattern>
+            
+            <mask id="ecg-mask">
+              <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-peak)" />
+            </mask>
+          </defs>
+          
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-flat)" />
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#rainbowEcg)" mask="url(#ecg-mask)" />
+        </svg>
+      </div>
     </div>
   );
 }
