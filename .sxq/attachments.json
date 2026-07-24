@@ -1,6 +1,6 @@
 {
   "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
-  "pulledAt": "2026-07-24T05:47:08.280Z",
+  "pulledAt": "2026-07-24T06:36:09.045Z",
   "tree": {
     ".qoder": {
       "repowiki": {
@@ -834,8 +834,8 @@
             "hash": "789da4a33a972dc87056bece3abc14be14f196b288033cf6085bc6db7a3784cb"
           },
           "LandingPage.tsx": {
-            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869748546",
-            "hash": "717524eaf716ecd29aee0d04fc0d0b6b380ae72237079fdfc808fb33b7e5080a"
+            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784874967973",
+            "hash": "d833b77e96bbc84da4dbf0d85d31438d6dfb84cdae7e4f5fc419b1cc3cdcb560"
           },
           "AssetsPage.tsx": {
             "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784808991468",
@@ -1093,7 +1093,7 @@
       "hash": "2b050410a3a1e290c6f6a67f9e70f8c9b41409230cdc88a8799442ca253de9e9"
     },
     "pnpm-lock.yaml": {
-      "rowKey": "d4071871421052944388-ca925de34ad74326a353f4a972da03b4_at1784868301228",
+      "rowKey": "d4071871421052944388-ca925de34ad74326a353f4a972da03b4_at1784872853965",
       "hash": "daa64b2c2369b67d101ae8c60ade1c5c7101a395ef445182680062a9542534b7"
     },
     "README.md": {
@@ -1105,12 +1105,9 @@
       "hash": "1a270cb8020d1fa879262423b9c222fa38d94b830ec61164a46b558ea9d2a526"
     },
     "tailwind.config.js": {
-      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589473",
-      "hash": "b6c57cbfd04ddac65996d13b01b8a7af1159187cff5f2351d74ca502b4030796"
+      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784873624619",
+      "hash": "34f20fe7a33db344fdfe2b2a8cf5836311df5fa1730e0daba1522f43656a9df0"
     }
   },
-  "conflicts": [
-    "src/pages/desktop/LandingPage.tsx",
-    "tailwind.config.js"
-  ]
+  "conflicts": []
 }
