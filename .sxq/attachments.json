@@ -1,10 +1,6 @@
 {
   "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
-<<<<<<< HEAD
-  "pulledAt": "2026-07-24T05:09:09.491Z",
-=======
-  "pulledAt": "2026-07-24T06:36:09.045Z",
->>>>>>> James
+  "pulledAt": "2026-07-24T07:22:16.168Z",
   "tree": {
     ".qoder": {
       "repowiki": {
@@ -681,6 +677,10 @@
             "rowKey": "f9f61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784777094322",
             "hash": "13e1012b848355f3a2db243a82305404a099f17928721d8b01f530efb946ed91"
           },
+          "QuoteChangeBadge.tsx": {
+            "rowKey": "8ed71871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006814",
+            "hash": "f8c8b036635aba4743bea331eddd48e24f3f7bdd35357c3ca4a57d59085af078"
+          },
           "AuthGate.tsx": {
             "rowKey": "d7ad1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784793796877",
             "hash": "e63924f1b9cef1173216583548399064018edde2c194f0feeb3642461ad3fa15"
@@ -748,6 +748,10 @@
           "rowKey": "0dc61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784804211611",
           "hash": "67084f7b96d125f6199f5e6066807cd1b9f756eea51eb22b096e23ec489c3384"
         },
+        "useQuotes.ts": {
+          "rowKey": "a33c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006823",
+          "hash": "e320d9524e57696ae1ffcfe21ee62b962479180df89d897449adcdbe56c47f9a"
+        },
         "useStress.ts": {
           "rowKey": "216c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784793734676",
           "hash": "97b263750b44c6a38e560b5f55253f44a58fd8cfe0cf26a316cce80e04562fa0"
@@ -757,8 +761,8 @@
           "hash": "e6921da615ebde0e4738f84cf25e7b5845c750319ce0f9ffe385022f2f66a725"
         },
         "useAssetLedger.ts": {
-          "rowKey": "5a7c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784798679925",
-          "hash": "a4195006bf4be1d07b963e953d3164debc149b93e4cf226fd8c61ff96ff92e3f"
+          "rowKey": "5a7c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006818",
+          "hash": "d5a071bce1eb1b875c06ec85e5cf8452d665262a9863010c2b4f6be5190fb7dc"
         }
       },
       "integrations": {
@@ -799,8 +803,8 @@
           "hash": "363c32766eda813009f441439187a59d25d05df4879de9f40ec06d3795291423"
         },
         "assetService.ts": {
-          "rowKey": "ce111871421052944388-ca925de34ad74326a353f4a972da03b4_at1784806466100",
-          "hash": "3b2cdca42443945980a0dc40c28fcb85e704951186ebfc7454a88ec805f65129"
+          "rowKey": "ce111871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006852",
+          "hash": "15880689bacceca0b4bee7854294b5d1ae491f17b2966aeeb65fd3c1c63a948a"
         },
         "importService.ts": {
           "rowKey": "1b281871421052944388-ca925de34ad74326a353f4a972da03b4_at1784801047114",
@@ -809,6 +813,10 @@
         "authService.ts": {
           "rowKey": "8b241871421052944388-ca925de34ad74326a353f4a972da03b4_at1784802327107",
           "hash": "f2ba6611139ae486ae14f18c6ae680cdfe41e05ace84657a74d4176ed55cdda0"
+        },
+        "quoteService.ts": {
+          "rowKey": "283a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006857",
+          "hash": "c862235232f0e390382bdf9b5d97c5aed68a77439225eab75c1d1f8d498c8bf1"
         }
       },
       "pages": {
@@ -834,21 +842,16 @@
             "hash": "b5921e718d3fca56a86b6a1f81636068d96d5812afb53a29f20c01bf8e8c79ed"
           },
           "DashboardPage.tsx": {
-            "rowKey": "80ac1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784801091225",
-            "hash": "789da4a33a972dc87056bece3abc14be14f196b288033cf6085bc6db7a3784cb"
+            "rowKey": "80ac1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006839",
+            "hash": "9d3298f9ea08795541d3e6fe719b91cf572975fa9d800a31d1eca0f3af51a1c0"
           },
           "LandingPage.tsx": {
-<<<<<<< HEAD
-            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869748546",
-            "hash": "717524eaf716ecd29aee0d04fc0d0b6b380ae72237079fdfc808fb33b7e5080a"
-=======
-            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784874967973",
-            "hash": "d833b77e96bbc84da4dbf0d85d31438d6dfb84cdae7e4f5fc419b1cc3cdcb560"
->>>>>>> James
+            "rowKey": "eb2c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877733210",
+            "hash": "26dd6b0abc6ddfb553b3a0ce47184a516eb0110e99263e7ac39a3576b4620fa5"
           },
           "AssetsPage.tsx": {
-            "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784808991468",
-            "hash": "e3c9cf26cc16e308eddf8eeea2879857d2c983f7ae2e350993264b329d8cc6fe"
+            "rowKey": "9ae81871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006833",
+            "hash": "dc3dac4ec3b9d157453a2289f743335a332ba253026d0329ad0a8b272d46d3be"
           }
         },
         "NotFound.tsx": {
@@ -856,10 +859,26 @@
           "hash": "27ef5ae218015f494f1359c53873d1d849d51d530ffeec8effc8856a98b0cdfb"
         }
       },
+      "types": {
+        "app": {
+          "quote.ts": {
+            "rowKey": "353f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006862",
+            "hash": "ff1efc1aaebd9deaeced5dc803bf9bcef99ccd12879e7dcd16e6dd736afb5783"
+          },
+          "asset.ts": {
+            "rowKey": "5a0a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784799434534",
+            "hash": "36eb03fe34c60a04cb236dc0a7194e7916b0885768aaf35d23d58530ebbe3296"
+          },
+          "analytics.ts": {
+            "rowKey": "36301871421052944388-ca925de34ad74326a353f4a972da03b4_at1784800976379",
+            "hash": "3700b071ac46dae979e8b81ce44151e493126220f6266d27aa2d3d8de20b175c"
+          }
+        }
+      },
       "lib": {
         "asset-format.ts": {
-          "rowKey": "20461871421052944388-ca925de34ad74326a353f4a972da03b4_at1784799434629",
-          "hash": "e83352e6a50212057ab6aec26b50f5f8bd4b3906b1c9e933da9feacd18693987"
+          "rowKey": "20461871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006828",
+          "hash": "efc026df269c3ac9835bd5bf0f6be0a84f4d447f26f315b7959143434e925bfb"
         },
         "utils.ts": {
           "rowKey": "10acpre_at1766666917314",
@@ -873,18 +892,6 @@
       "main.tsx": {
         "rowKey": "7f5cpre_at1766666917314",
         "hash": "56da181c6a327f0fb9b23ec6f533327bf4b7057d5d2f7fdaf4f67fa8085907ef"
-      },
-      "types": {
-        "app": {
-          "asset.ts": {
-            "rowKey": "5a0a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784799434534",
-            "hash": "36eb03fe34c60a04cb236dc0a7194e7916b0885768aaf35d23d58530ebbe3296"
-          },
-          "analytics.ts": {
-            "rowKey": "36301871421052944388-ca925de34ad74326a353f4a972da03b4_at1784800976379",
-            "hash": "3700b071ac46dae979e8b81ce44151e493126220f6266d27aa2d3d8de20b175c"
-          }
-        }
       },
       "layouts": {
         "desktop": {
@@ -1085,6 +1092,20 @@
       "rowKey": "b3811871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869184708",
       "hash": "50c369e0b31de9ea9749d4780db111c523d516069bb6dc0ad8e619a27663ec81"
     },
+    "backend": {
+      "main.py": {
+        "rowKey": "22931871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006801",
+        "hash": "fbe86d2785b69a434f368bcd7e19b4c6a1f13b6af41b0147b573dd55ceb9619c"
+      },
+      "quote_api.py": {
+        "rowKey": "c6bc1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006806",
+        "hash": "d99d97b514b9f8a7ee2225a39f14a137852ccf9e8678ea25b271e718c3d219b3"
+      },
+      "requirements.txt": {
+        "rowKey": "336c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006810",
+        "hash": "53e22763093dd05959a12bdc038687913cd992c71efd46bf7c30c5d94c2963a7"
+      }
+    },
     "tsconfig.json": {
       "rowKey": "4856pre_at1766666917314",
       "hash": "5eb23b1e3674d2641eb5c65c056ea53a727fc1c3c06cadc22e94f8e696fbcbb3"
@@ -1092,6 +1113,14 @@
     "postcss.config.js": {
       "rowKey": "da71pre_at1766666917314",
       "hash": "f88dc30c104c5250a425ee5c7d93cdd673315741878a40eee0eae5e7fbd2b141"
+    },
+    ".gitignore": {
+      "rowKey": "7f8e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006797",
+      "hash": "8d1076e673805705a3a2263eacc6a2c72bfb0587929a7eb64719aa8835d4655d"
+    },
+    "pnpm-workspace.yaml": {
+      "rowKey": "2ac11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877320710",
+      "hash": "189e005610df10de3b24f9c8752cb4cf0367f195437df1f79ccc58a88be6401c"
     },
     "package.json": {
       "rowKey": "03331871421052944388-ca925de34ad74326a353f4a972da03b4_at1784794127547",
@@ -1114,13 +1143,8 @@
       "hash": "1a270cb8020d1fa879262423b9c222fa38d94b830ec61164a46b558ea9d2a526"
     },
     "tailwind.config.js": {
-<<<<<<< HEAD
-      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784869589473",
-      "hash": "b6c57cbfd04ddac65996d13b01b8a7af1159187cff5f2351d74ca502b4030796"
-=======
-      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784873624619",
-      "hash": "34f20fe7a33db344fdfe2b2a8cf5836311df5fa1730e0daba1522f43656a9df0"
->>>>>>> James
+      "rowKey": "f6261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784877006866",
+      "hash": "14ab3c2a5ca72cd5f5cc48ee4c4ede690cc0a63129ad850874189ea14bf5f49e"
     }
   },
   "conflicts": []

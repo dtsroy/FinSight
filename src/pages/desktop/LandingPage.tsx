@@ -1,13 +1,8 @@
 import AccountDialog from "@/components/desktop/AccountDialog";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
-<<<<<<< HEAD
-import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck } from "lucide-react";
-import { useState, useRef } from "react";
-=======
 import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
->>>>>>> James
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -58,28 +53,6 @@ export default function LandingPage() {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = -((y - centerY) / centerY) * 10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-    
-    setRotation({ x: rotateX, y: rotateY });
-  }
-
-  function handleMouseLeave() {
-    setRotation({ x: 0, y: 0 });
-  }
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // 计算旋转角度 (最大偏转 10 度)
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const rotateX = -((y - centerY) / centerY) * 10;
@@ -180,9 +153,6 @@ export default function LandingPage() {
               </Link>
             )}
           </div>
-<<<<<<< HEAD
-          <div className="group perspective-1000 relative">
-=======
           <p className="mt-6 flex items-center gap-2 text-xs font-medium text-muted-foreground/80">
             <ShieldCheck className="size-4" />
             {identity.isAnonymous
@@ -196,50 +166,16 @@ export default function LandingPage() {
           
           {/* Left: 3D Alarm Panel */}
           <div className="group [perspective:1000px] relative">
->>>>>>> James
             <div 
               ref={cardRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-<<<<<<< HEAD
-              className="radiograph-panel relative rounded-xl border border-border/50 bg-card/80 p-5 backdrop-blur-xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[20px_20px_40px_-10px_rgba(249,115,22,0.15)] md:p-7"
-=======
               className="radiograph-panel relative rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-2xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_20px_60px_-15px_rgba(239,68,68,0.15)] md:p-8"
->>>>>>> James
               style={{
                 transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
               }}
             >
               <div className="scanner-line" />
-<<<<<<< HEAD
-              <div className="flex items-center justify-between border-b border-border/50 pb-4">
-              <span className="font-mono text-xs font-semibold text-muted-foreground tracking-widest">X-RAY · ENGINE ACTIVE</span>
-              <span className="relative flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive shadow-[0_0_10px_rgba(239,68,68,0.2)]">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
-                  <span className="relative inline-flex size-2 rounded-full bg-destructive"></span>
-                </span>
-                Critical 级告警
-              </span>
-            </div>
-            <div className="py-9 text-center">
-              <p className="text-sm text-muted-foreground">贵州茅台 · 重复暴露计算</p>
-              <strong className="mt-3 block font-mono text-7xl text-destructive">18%</strong>
-              <p className="mt-3 text-sm text-muted-foreground">表面直接持有仅 8%</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg border border-border/50 bg-background/40 p-4 transition-colors group-hover:bg-background/60">
-                <p className="text-xs font-medium text-muted-foreground">高危行业集中度</p>
-                <b className="mt-2 block font-mono text-3xl tracking-tight text-chart-4">60%+</b>
-              </div>
-              <div className="rounded-lg border border-border/50 bg-background/40 p-4 transition-colors group-hover:bg-background/60">
-                <p className="text-xs font-medium text-muted-foreground">应急资金储备</p>
-                <b className="mt-2 block font-mono text-3xl tracking-tight text-destructive">&lt; 3 个月</b>
-              </div>
-            </div>
-          </div>
-        </div>
-=======
               <div className="flex items-center justify-between border-b border-border/50 pb-5">
                 <span className="font-mono text-xs font-bold tracking-widest text-muted-foreground/80">AGENT: X-RAY ENGINE</span>
                 <span className="relative flex items-center gap-2 rounded-full border border-foreground/20 bg-foreground/5 px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-[0_0_15px_rgba(0,0,0,0.05)]">
@@ -320,7 +256,6 @@ export default function LandingPage() {
               </article>
             ))}
           </div>
->>>>>>> James
         </section>
 
         <p className="mt-20 flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
