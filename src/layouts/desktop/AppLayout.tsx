@@ -1,7 +1,9 @@
 import AccountMenu from "@/components/desktop/AccountMenu";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
-import { Activity, FileScan, FlaskConical, ListChecks, MessageCircle, PieChart, Upload } from "lucide-react";
+import { Activity, FileScan, FlaskConical, ListChecks, MessageCircle, Moon, PieChart, Sun, Upload } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
 
 const navigation = [
   { to: "/dashboard", label: "资产全景", icon: PieChart },
@@ -14,13 +16,14 @@ const navigation = [
 
 export default function AppLayout() {
   const identity = useAccountIdentity();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="min-h-screen md:flex">
       <aside className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur md:flex md:h-screen md:w-64 md:flex-col md:border-b-0 md:border-r">
         <NavLink to="/" className="flex h-20 items-center gap-3 border-b border-border px-5">
-          <span className="grid size-10 place-items-center rounded-lg border border-primary/30 bg-primary/10 text-primary"><Activity /></span>
-          <span><b className="block tracking-[.18em]">财务 X 光</b><small className="font-mono text-[10px] text-muted-foreground">FINANCIAL XRAY</small></span>
+          <span className="grid size-10 place-items-center rounded-lg bg-foreground text-background"><Activity /></span>
+          <span className="font-bold tracking-tight text-foreground">FinSight</span>
         </NavLink>
         <nav className="flex gap-1 overflow-x-auto p-3 md:flex-1 md:flex-col md:overflow-y-auto md:p-4">
           {navigation.map(({ to, label, icon: Icon }) => (
@@ -29,7 +32,13 @@ export default function AppLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="hidden md:block">
+        <div className="hidden flex-col gap-2 border-t border-border p-4 md:flex">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">主题设置</span>
+            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="h-8 w-8 text-muted-foreground hover:bg-secondary hover:text-foreground">
+              {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </Button>
+          </div>
           <AccountMenu email={identity.email} isAnonymous={identity.isAnonymous} userId={identity.userId} />
         </div>
       </aside>

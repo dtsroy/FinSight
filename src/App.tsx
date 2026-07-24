@@ -37,7 +37,7 @@ const router = createBrowserRouter(createRoutesFromElements(
   </Route>
 ));
 
-const App = () => <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+const App = () => <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
   <QueryClientProvider client={queryClient}><TooltipProvider><Sonner /><RouterProvider router={router} /></TooltipProvider></QueryClientProvider>
 </ThemeProvider>;
 
