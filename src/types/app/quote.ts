@@ -40,6 +40,17 @@ export interface QuoteChangeRequest {
 export type QuoteChangeMap = Record<string, AssetQuoteChange>;
 
 /**
+ * 基金披露的单条重仓股（来自行情后端 /get_fund_zc 的实时数据）。
+ * 与 X-Ray 静态底稿 fund_holdings 表同构，可直接替换用于穿透计算。
+ */
+export interface FundTopHolding {
+  /** 底层股票代码（6 位 A 股代码，不带市场后缀）。 */
+  stock_code: string;
+  /** 占基金净值比例（百分比），`9.5` 表示 9.5%。 */
+  weight: number;
+}
+
+/**
  * 组合层面的涨跌汇总，币种统一为人民币（CNY）。
  * `changeAmount` 已把各资产的涨跌额按参考/今日汇率折算相加。
  */
