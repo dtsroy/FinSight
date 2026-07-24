@@ -2,6 +2,7 @@ import AssetFilters from "@/components/desktop/AssetFilters";
 import BatchEditDialog, { type BatchField } from "@/components/desktop/BatchEditDialog";
 import BatchToolbar from "@/components/desktop/BatchToolbar";
 import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
+import PlatformCell from "@/components/desktop/PlatformCell";
 import QuoteChangeBadge from "@/components/desktop/QuoteChangeBadge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -28,10 +29,35 @@ import { CURRENCY_META, CURRENCY_ORDER, convertAmount, formatAmountForInput, par
 import type { AssetBatchPatch, AssetListFilters } from "@/types/app/asset";
 import { CATEGORY_LABEL, CATEGORY_ORDER, type Asset, type AssetCategory, type AssetInput } from "@/types/app/asset";
 import { classifyQuoteInstrument } from "@/types/app/quote";
-import { Pencil, PlusCircle, Trash2 } from "lucide-react";
+import { Pencil, PlusCircle, Trash2, Landmark } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+
+import ccbLogo from "@/assets/bank-logos/ccb.svg";
+import cebLogo from "@/assets/bank-logos/ceb.svg";
+import cibLogo from "@/assets/bank-logos/cib.svg";
+import citicLogo from "@/assets/bank-logos/citic.svg";
+import cmbLogo from "@/assets/bank-logos/cmb.svg";
+import hsbcLogo from "@/assets/bank-logos/hsbc.svg";
+import scbLogo from "@/assets/bank-logos/scb.svg";
+import spbLogo from "@/assets/bank-logos/spb.svg";
+
+function getPlatformIcon(platform: string | undefined) {
+  if (!platform) return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+  
+  const name = platform.toLowerCase();
+  if (name.includes("招商银行")) return <img src={cmbLogo} alt="招商银行" className="size-4 shrink-0" />;
+  if (name.includes("建设银行")) return <img src={ccbLogo} alt="建设银行" className="size-4 shrink-0" />;
+  if (name.includes("中信银行")) return <img src={citicLogo} alt="中信银行" className="size-4 shrink-0" />;
+  if (name.includes("光大银行")) return <img src={cebLogo} alt="光大银行" className="size-4 shrink-0" />;
+  if (name.includes("兴业银行")) return <img src={cibLogo} alt="兴业银行" className="size-4 shrink-0" />;
+  if (name.includes("汇丰银行")) return <img src={hsbcLogo} alt="汇丰银行" className="size-4 shrink-0" />;
+  if (name.includes("渣打银行")) return <img src={scbLogo} alt="渣打银行" className="size-4 shrink-0" />;
+  if (name.includes("浦发银行")) return <img src={spbLogo} alt="浦发银行" className="size-4 shrink-0" />;
+  
+  return <Landmark className="size-4 shrink-0 text-muted-foreground/50" />;
+}
 
 const PAGE_SIZE = 20;
 const EMPTY_FILTERS: AssetListFilters = { search: "", category: null, platform: null, source: null, currency: null };
@@ -266,7 +292,12 @@ export default function AssetsPage() {
                     </td>
                     <td className="px-4 py-3"><div><b className="text-foreground">{asset.name}</b>{asset.note && <p className="mt-0.5 text-xs text-muted-foreground">{asset.note}</p>}</div></td>
                     <td className="px-4 py-3 text-muted-foreground">{CATEGORY_LABEL[asset.category]}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{asset.platform}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        {getPlatformIcon(asset.platform)}
+                        <span>{asset.platform || "—"}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{asset.code ?? "—"}</td>
                     <td className="px-4 py-3 text-right font-mono">
                       {formatByCurrency(asset.amount, asset.currency, true)}

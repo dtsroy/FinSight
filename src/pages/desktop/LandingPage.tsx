@@ -1,11 +1,12 @@
 import AccountDialog from "@/components/desktop/AccountDialog";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
-import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp } from "lucide-react";
+import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useTheme } from "next-themes";
 
 const features = [
   { icon: Layers3, title: "多维极速导入与智能归类", text: "零样本视觉特征提取，自动判断机构特征并归集各类资产。" },
@@ -13,7 +14,13 @@ const features = [
   { icon: FlaskConical, title: "自适应问诊引擎", text: "告别生硬问卷。在温和投顾与严厉医生间无缝切换，阻断情绪化决策。" },
 ];
 
-const rotatingWords = ["分散", "安全", "稳健", "掌控"];
+const titleWords = ["分散", "安全", "稳健", "掌控"];
+const subWords = ["API 协同归集资产", "穿透剖析底层持仓", "宏观视角的压力测试", "极度理性的风控阻断"];
+const highlightColors = [
+  "from-orange-500/30 to-orange-400/20",
+  "from-blue-500/30 to-blue-400/20",
+  "from-yellow-500/30 to-yellow-400/20"
+];
 
 const mockPieData = [
   { name: "贵州茅台", value: 18.5 },
@@ -30,7 +37,8 @@ export default function LandingPage() {
 
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [wordIndex, setWordIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,8 +50,8 @@ export default function LandingPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % rotatingWords.length);
-    }, 2500);
+      setActiveIndex((prev) => prev + 1);
+    }, 1200);
     return () => clearInterval(interval);
   }, []);
 
@@ -114,6 +122,15 @@ export default function LandingPage() {
               </button>
             </>
           )}
+          
+          <div className="ml-2 hidden h-5 w-px bg-border md:block"></div>
+          <button 
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")} 
+            className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
         </div>
         </div>
       </nav>
@@ -125,18 +142,23 @@ export default function LandingPage() {
         
         {/* Top Centered Section */}
         <section className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <p className="mb-6 font-mono text-xs font-semibold tracking-[.32em] text-primary">YOUR NEXT-GEN INSIGHT HUB</p>
+          <p className="mb-6 font-mono text-xs font-semibold tracking-[.32em] text-foreground/60">YOUR NEXT-GEN INSIGHT HUB</p>
           <h1 className="text-6xl font-extrabold leading-[1.1] tracking-tighter md:text-[5.5rem]">
             你以为的
-            <span className="relative mx-3 inline-flex items-center justify-center">
-              <span className="absolute -inset-1 -skew-y-2 bg-primary/10 transition-all duration-500"></span>
-              <span className="relative text-primary transition-all duration-500">{rotatingWords[wordIndex]}</span>
+            <span className="relative mx-4 inline-flex items-center justify-center">
+              <span className={`absolute -inset-x-3 -inset-y-1 -skew-y-2 bg-gradient-to-r ${highlightColors[activeIndex % highlightColors.length]} transition-colors duration-500`}></span>
+              <span className="relative text-foreground transition-all duration-500">{titleWords[activeIndex % titleWords.length]}</span>
             </span>
             ，<br />
             可能只是棋局的表象。
           </h1>
-          <p className="mt-8 max-w-2xl text-lg font-medium leading-relaxed text-muted-foreground md:text-xl">
-            将机构级视野赋能给普通的 Pawn。通过 API 协同归集资产、穿透底层持仓，并在关键时刻触发极度理性的决策阻断。
+          <p className="mt-8 max-w-2xl text-lg font-medium leading-relaxed text-muted-foreground md:text-xl text-center">
+            将机构级视野赋能给普通的 Pawn。<br />
+            通过
+            <span className="relative mx-3 inline-flex items-center justify-center">
+              <span className={`absolute -inset-x-3 -inset-y-1 -skew-y-2 bg-gradient-to-r ${highlightColors[(activeIndex + 1) % highlightColors.length]} transition-colors duration-500`}></span>
+              <span className="relative text-foreground transition-all duration-500">{subWords[activeIndex % subWords.length]}</span>
+            </span>
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link to="/dashboard" className="group flex items-center gap-2 rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background transition-all hover:bg-foreground/90 hover:shadow-xl hover:shadow-foreground/20">
