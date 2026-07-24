@@ -198,7 +198,7 @@ function StatCard({ label, value, note, tone }: { label: string; value: string; 
   return (
     <div className={`rounded-lg border p-5 shadow-sm ${tone ? toneMap[tone] : "border-border bg-card"}`}>
       <p className="text-xs text-muted-foreground">{label}</p>
-      <b className="mt-3 block font-mono text-2xl">{value}</b>
+      <b className="mt-3 block text-2xl font-num">{value}</b>
       {note && <p className="mt-2 text-xs text-muted-foreground">{note}</p>}
     </div>
   );

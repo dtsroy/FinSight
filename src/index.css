@@ -62,7 +62,8 @@
     --shadow-2xl: 0 10px 20px -4px rgba(0, 0, 0, 0.08);
     --font-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
     --font-serif: 'Noto Sans SC', sans-serif;
-    --font-mono: 'JetBrains Mono', Menlo, monospace;
+    --font-mono: 'JetBrains Mono', Menlo, Consolas, 'Noto Sans SC', 'PingFang SC', monospace;
+    --font-num: 'DIN Alternate', 'DIN Condensed', 'DIN', 'Inter', -apple-system, sans-serif;
   }
 
   .dark {

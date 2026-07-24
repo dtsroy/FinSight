@@ -19,7 +19,7 @@ export function useChatStream() {
   const [streaming, setStreaming] = useState<StreamingChat | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const send = useCallback(async (message: string) => {
+  const send = useCallback(async (message: string, riskState: Record<string, unknown> | null = null) => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -31,6 +31,7 @@ export function useChatStream() {
     try {
       await streamChatMessage(
         message,
+        riskState,
         {
           onMeta: (tone) =>
             setStreaming((prev) => (prev ? { ...prev, tone } : prev)),

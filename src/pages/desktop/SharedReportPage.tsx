@@ -204,7 +204,7 @@ function Stat({ label, value, note, tone }: { label: string; value: string; note
   return (
     <div className={`rounded-md border p-3 ${toneCls}`}>
       <p className="text-xs text-muted-foreground">{label}</p>
-      <b className="mt-1 block font-mono text-xl">{value}</b>
+      <b className="mt-1 block text-xl font-num">{value}</b>
       {note && <p className="text-xs text-muted-foreground">{note}</p>}
     </div>
   );

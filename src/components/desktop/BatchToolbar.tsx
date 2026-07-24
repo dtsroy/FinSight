@@ -41,7 +41,7 @@ export default function BatchToolbar({
         <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/15 px-2.5 py-1 text-sm font-medium text-primary">
           <CheckCheck className="size-4" />已选 {selectedCount} 项
         </span>
-        <span className="font-mono text-sm text-muted-foreground">合计 {formatCurrency(selectedSum, true)}<span className="ml-1 text-xs">（折算人民币）</span></span>
+        <span className="text-sm text-muted-foreground">合计 {formatCurrency(selectedSum, true)}<span className="ml-1 text-xs">（折算人民币）</span></span>
         {showSelectAllHint && (
           <Button variant="link" size="sm" className="h-auto px-1 py-0 text-xs" onClick={onSelectAllMatching}>
             选中全部 {totalMatching} 项匹配结果

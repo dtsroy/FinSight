@@ -28,6 +28,7 @@ Deno.serve(async (req) => {
 
   const body = await req.json().catch(() => ({}));
   const message: string = typeof body?.message === "string" ? body.message.trim() : "";
+  const riskState: any = body?.riskState ?? null;
   if (!message) return jsonResponse({ error: "empty_message" }, 400);
   if (message.length > 2000) return jsonResponse({ error: "too_long", limit: 2000 }, 413);
 
@@ -117,14 +118,21 @@ Deno.serve(async (req) => {
 
   const context = buildContext({ total, summary, xray, stressRuns, monthlyExpense, xrayFresh, stressFresh });
 
+  const riskInfo = riskState ? `
+【当前确定的风险评估状态】
+- 等级：${riskState.level}
+- 触发原因：${(riskState.reasons || []).join("；")}
+（注：此状态由系统硬规则计算得出，你必须尊重此等级进行表达，不能自行推翻或决定等级。若为 critical 请使用犀利直接语气，否则使用温和语气。）
+` : "";
+
   const systemPrompt = `你是「财务诊断医生」，专门为个人投资者体检散在多平台的资产组合。核心原则：
 1. 诊断师定位：只指出风险与集中度、复盘历史情景冲击、解释底层持仓，不推荐任何具体买卖动作。
 2. 直白语言：用大白话说"哪里有风险、最坏会怎样、缓冲能撑多久"，避免堆砌专业术语。
-3. 语气模式：默认温和、共情；一旦发现严重集中度或应急金告警，切换为犀利直接语气，用"你必须先..."或"最紧要的是..."等句式引起重视。
+3. 语气模式：请根据下方给出的【当前确定的风险评估状态】调整语气。如果等级为 critical，必须切换为犀利直接语气，用"你必须先..."或"最紧要的是..."等句式引起重视；若为 warning 或 normal，请保持温和、共情。
 4. 结构：先给一句结论，再列 2-4 条具体解释，最后引导用户下一步查看的页面（X 光穿透 / 压力测试 / 资产账本）。不要写 markdown 表格。
 5. 一律不使用 emoji 与营销话术。
 6. 如果某项体检快照已过期（下文标注），请提醒用户先重新扫描/测试再下结论，不要凭旧快照断言当前风险。
-
+${riskInfo}
 以下是本用户当前的资产诊断快照（真实数据，不要编造）：
 ${context}`;
 
@@ -134,7 +142,7 @@ ${context}`;
     { role: "user", content: message },
   ];
 
-  const sharp = shouldBeSharp(xray, stressRuns, xrayFresh, stressFresh);
+  const sharp = riskState?.level === "critical";
   const tone: "friendly" | "sharp" = sharp ? "sharp" : "friendly";
 
   let aiRes: Response;
@@ -398,24 +406,4 @@ function catLabel(cat: string): string {
     insurance: "保险", cash_management: "现金理财", other: "其他",
   };
   return map[cat] ?? cat;
-}
-
-function shouldBeSharp(
-  xray: Record<string, unknown> | null,
-  stressRuns: Record<string, unknown>[],
-  xrayFresh: boolean,
-  stressFresh: boolean,
-): boolean {
-  if (xray && xrayFresh) {
-    if (Number((xray.top_industry_pct as number) ?? 0) > 40) return true;
-    const topStocks = (xray.top_stocks as { pct: number }[] | undefined) ?? [];
-    if (topStocks[0] && Number(topStocks[0].pct) > 15) return true;
-  }
-  if (stressFresh) {
-    for (const r of stressRuns) {
-      if (r.emergency_months != null && Number(r.emergency_months) < 3) return true;
-      if (Number(r.loss_pct) > 30) return true;
-    }
-  }
-  return false;
 }

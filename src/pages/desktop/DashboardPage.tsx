@@ -72,7 +72,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-xs tracking-[.25em] text-muted-foreground">组合生命体征</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <b className="font-mono text-4xl text-primary">{summary.isLoading ? "…" : healthScore}</b>
+              <b className="text-4xl text-primary font-num">{summary.isLoading ? "…" : healthScore}</b>
               <span className="text-xs text-muted-foreground">/ 100</span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -265,7 +265,7 @@ function MetricCard({ label, value, note, icon, highlight, change }: { label: st
   return (
     <section className={`rounded-lg border p-5 shadow-sm ${highlight ? "border-warning/40 bg-warning/10" : "border-border bg-card"}`}>
       <div className="flex items-center justify-between text-sm text-muted-foreground">{label}{icon}</div>
-      {value == null ? <Skeleton className="mt-4 h-8 w-40" /> : <strong className="mt-4 block font-mono text-3xl tracking-tight text-primary md:text-4xl">{value}</strong>}
+      {value == null ? <Skeleton className="mt-4 h-8 w-40" /> : <strong className="mt-4 block text-3xl tracking-tight text-primary md:text-4xl font-num">{value}</strong>}
       {change && <div className="mt-2">{change}</div>}
       {note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}
     </section>
