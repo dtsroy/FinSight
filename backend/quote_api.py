@@ -10,6 +10,7 @@ Both functions return a plain float representing the **day change percentage**,
 where +1.23 means +1.23 % and -0.5 means -0.50 %.
 Raise any exception on failure; main.py will convert it to HTTP 502.
 """
+from typing import Dict, List
 from datetime import datetime, timedelta
 
 import panda_data
@@ -131,3 +132,21 @@ def get_fund_diff(code: str) -> float:
     except ValueError as e:
         # 空值，尝试获得万份收益计算
         return float(json.loads(html.text)['data'][0]['net']) / 1e4 * 1e2
+
+def get_fund_zc(code: str) -> List[Dict[str, str|float]]:
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "hexin-v": "A9h8UTcfBtgVCSpcot1v3LNRqQ1vwTxLniUQzxLJJJPGrXazutEM2-414FNh",
+        "sec-ch-ua": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Microsoft Edge\";v=\"150\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "x-requested-with": "XMLHttpRequest"
+    }
+    html = get(f"https://fund.10jqka.com.cn/web/fund/stockAndBond/{code}/", headers=headers)
+    html.encoding = html.apparent_encoding
+    data = json.loads(html.text)['data']['stock']
+    ret = []
+    for stk in data:
+        if stk['zcType'] == 'stock':
+            ret.append({"code": stk['zcCode'], 'ccRate': float(stk['ccRate'])})
+    return ret

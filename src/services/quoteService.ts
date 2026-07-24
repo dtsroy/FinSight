@@ -1,6 +1,7 @@
 import { convertAmount, type FxRateMap } from "@/lib/currency";
 import type {
   AssetQuoteChange,
+  FundTopHolding,
   PortfolioQuoteChange,
   QuoteChangeMap,
   QuoteChangeRequest,
@@ -64,6 +65,57 @@ async function fetchChangePct(
       `[quote] ❌ 请求失败（常见原因：Mixed Content / CORS / cpolar 拦截页 / 网络）：${url}`,
       err,
     );
+    return null;
+  }
+}
+
+/**
+ * 拉取一只基金最新披露的重仓股（实时数据，来自本地 Python 后端 /get_fund_zc）。
+ *
+ * 返回 null 的情况（调用方应直接舍弃该基金、走自己的兜底逻辑）：
+ * - 后端不可达 / 网络失败；
+ * - 非 2xx 响应（上游 502、参数 400 等）；
+ * - 基金本身没有披露股票持仓（货币基金等）——后端返回空列表；
+ * - 响应形状不符合预期（防御性清洗后无有效条目）。
+ */
+export async function fetchFundTopHoldings(code: string): Promise<FundTopHolding[] | null> {
+  const url = `${QUOTE_API_BASE}/get_fund_zc?code=${encodeURIComponent(code)}`;
+
+  // 与 fetchChangePct 相同的混合内容自检：HTTPS 页面调 HTTP 接口会被浏览器静默拦截。
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    url.startsWith("http://")
+  ) {
+    console.error(
+      `[quote] ❌ Mixed Content 拦截：页面是 HTTPS，但重仓接口是 HTTP，浏览器已在发送前拦截。\n` +
+        `  URL = ${url}\n` +
+        `  解决：把 QUOTE_API_BASE 换成 https 的 cpolar 地址，或用 http 打开前端。`,
+    );
+    return null;
+  }
+
+  try {
+    console.debug(`[quote] → GET ${url}`);
+    const res = await fetch(url);
+    console.debug(`[quote] ← ${res.status} ${res.statusText}  (${url})`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => "<无法读取响应体>");
+      console.warn(`[quote] ⚠️ 基金重仓获取失败（已舍弃）：${res.status} code=${code}，body=`, body);
+      return null;
+    }
+    const json = (await res.json()) as { holdings?: { code?: unknown; ccRate?: unknown }[] };
+    const holdings = (json.holdings ?? [])
+      .map((h) => ({ stock_code: String(h?.code ?? "").trim(), weight: Number(h?.ccRate) }))
+      .filter((h) => h.stock_code !== "" && Number.isFinite(h.weight) && h.weight > 0);
+    if (holdings.length === 0) {
+      // 货币基金等没有股票披露，或上游返回了脏数据 —— 同样按「不可穿透」舍弃。
+      console.warn(`[quote] ⚠️ 基金 ${code} 无有效重仓披露（已舍弃）`);
+      return null;
+    }
+    return holdings;
+  } catch (err) {
+    console.error(`[quote] ❌ 基金重仓请求失败（已舍弃）：${url}`, err);
     return null;
   }
 }

@@ -18,6 +18,11 @@ interface FundHolding {
   industry: string;
   weight: number;
 }
+/** 前端预拉取的实时重仓条目（来自行情后端 /get_fund_zc，只有代码 + 权重）。 */
+interface LiveHoldingItem {
+  stock_code: string;
+  weight: number;
+}
 interface StockExposure {
   stock_code: string;
   stock_name: string;
@@ -34,6 +39,31 @@ Deno.serve(async (req) => {
   const auth = await requireUser(req);
   if (auth instanceof Response) return auth;
   const { userId, jwt } = auth;
+
+  // 前端在调用前会向行情后端逐基金预拉取实时重仓，通过 body.live_holdings 传入；
+  // 拉不到（报错/无披露）的基金不会出现在里面。这里只做防御性校验：
+  // 形状不对、权重非正数的条目一律丢弃，不让脏数据污染穿透结果。
+  const liveHoldingsMap = new Map<string, LiveHoldingItem[]>();
+  try {
+    const body = await req.json();
+    const raw = (body as Record<string, unknown> | null)?.live_holdings;
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      for (const [fundCode, items] of Object.entries(raw as Record<string, unknown>)) {
+        if (!Array.isArray(items)) continue;
+        const valid: LiveHoldingItem[] = [];
+        for (const it of items) {
+          const rec = it as Record<string, unknown> | null;
+          const stockCode = String(rec?.stock_code ?? "").trim();
+          const weight = Number(rec?.weight);
+          if (!stockCode || !Number.isFinite(weight) || weight <= 0) continue;
+          valid.push({ stock_code: stockCode, weight });
+        }
+        if (valid.length > 0) liveHoldingsMap.set(String(fundCode), valid);
+      }
+    }
+  } catch {
+    // 无 body 或 JSON 解析失败：当作没有实时数据，继续走静态底稿。
+  }
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -68,13 +98,21 @@ Deno.serve(async (req) => {
     const fundCodes = Array.from(new Set(fundAssets.map((a) => a.code).filter(Boolean).map(String)));
     const stockCodes = Array.from(new Set(stockAssets.map((a) => a.code).filter(Boolean).map(String)));
 
+    // 实时重仓的底层股票也要一并解析行业（命中不了的穿透时归「其他」）。
+    const liveStockCodes = Array.from(new Set(
+      Array.from(liveHoldingsMap.values()).flat().map((h) => h.stock_code),
+    ));
+    const allStockCodes = Array.from(new Set([...stockCodes, ...liveStockCodes]));
+    // 已有实时重仓的基金不再查静态底稿，底稿只作为未命中基金的回退。
+    const fallbackFundCodes = fundCodes.filter((c) => !liveHoldingsMap.has(c));
+
     const [mastersRes, holdingsRes, industriesRes] = await Promise.all([
       supabase.from("fund_master").select("fund_code, fund_name")
         .in("fund_code", fundCodes.length ? fundCodes : ["__none__"]),
       supabase.from("fund_holdings").select("fund_code, stock_code, stock_name, industry, weight")
-        .in("fund_code", fundCodes.length ? fundCodes : ["__none__"]),
+        .in("fund_code", fallbackFundCodes.length ? fallbackFundCodes : ["__none__"]),
       supabase.from("stock_industry").select("stock_code, stock_name, industry")
-        .in("stock_code", stockCodes.length ? stockCodes : ["__none__"]),
+        .in("stock_code", allStockCodes.length ? allStockCodes : ["__none__"]),
     ]);
     if (mastersRes.error || holdingsRes.error || industriesRes.error) {
       console.error("xray_reference_load_failed", mastersRes.error, holdingsRes.error, industriesRes.error);
@@ -113,7 +151,8 @@ Deno.serve(async (req) => {
       industryExposureMap.set(industry, (industryExposureMap.get(industry) ?? 0) + amount);
     };
 
-    // 基金：披露前十大权重摊到底层；剩余仓位 + 无代码/未收录基金 → 未知底层
+    // 基金穿透优先级：实时重仓（前端预拉取）> 静态底稿 fund_holdings > 未收录。
+    // 披露的权重摊到底层个股；未披露残值 + 无代码/未收录基金 → 未知底层。
     for (const fa of fundAssets) {
       const amount = toBaseAmount(fa.amount, fa.currency);
       if (!fa.code) {
@@ -122,10 +161,28 @@ Deno.serve(async (req) => {
         continue;
       }
       const code = String(fa.code);
-      const items = holdingsMap.get(code);
       const fundName = masterMap.get(code) ?? fa.name;
-      if (!items || items.length === 0) {
-        unmatched.push({ code, name: fundName, amount, reason: "底稿未收录" });
+
+      const liveItems = liveHoldingsMap.get(code);
+      let items: FundHolding[];
+      if (liveItems) {
+        // 实时重仓只有代码 + 权重；名称/行业用 stock_industry 解析，查不到归「其他」。
+        items = liveItems.map((h) => {
+          const info = industryMap.get(h.stock_code);
+          return {
+            fund_code: code,
+            stock_code: h.stock_code,
+            stock_name: info?.name ?? h.stock_code,
+            industry: info?.industry ?? "其他",
+            weight: h.weight,
+          };
+        });
+      } else {
+        items = holdingsMap.get(code) ?? [];
+      }
+
+      if (items.length === 0) {
+        unmatched.push({ code, name: fundName, amount, reason: "实时重仓不可用且底稿未收录" });
         industryExposureMap.set("未知底层", (industryExposureMap.get("未知底层") ?? 0) + amount);
         continue;
       }

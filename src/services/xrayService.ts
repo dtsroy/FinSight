@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { listQuotableAssets } from "@/services/assetService";
 import { getCurrentUserId } from "@/services/authService";
+import { fetchFundTopHoldings } from "@/services/quoteService";
 import type { XRayReport } from "@/types/app/analytics";
+import type { FundTopHolding } from "@/types/app/quote";
 
 function toReport(row: Record<string, unknown>): XRayReport {
   return {
@@ -36,10 +39,49 @@ export async function getLatestXRay(): Promise<XRayReport | null> {
   return data ? toReport(data as Record<string, unknown>) : null;
 }
 
+/**
+ * 扫描前的实时重仓预拉取（best-effort）：
+ * 逐只有代码的基金调用行情后端 /get_fund_zc；拉不到的基金（上游报错、
+ * 无股票披露、后端不可用）直接被舍弃、不进返回表 —— edge function 会对
+ * 这些基金回退到静态底稿，底稿也没收录的按「未穿透」列入 unmatched_funds，
+ * 金额计入"未知底层"，不会静默丢失。
+ * 预拉取本身的任何异常（未登录、资产查询失败等）也不阻断扫描：退化为纯静态底稿穿透。
+ */
+async function fetchLiveFundHoldings(): Promise<Record<string, FundTopHolding[]>> {
+  try {
+    const assets = await listQuotableAssets();
+    const codes = Array.from(
+      new Set(
+        assets
+          .filter((a) => a.category === "fund" && a.code != null)
+          .map((a) => (a.code as string).trim())
+          .filter(Boolean),
+      ),
+    );
+    if (codes.length === 0) return {};
+
+    const live: Record<string, FundTopHolding[]> = {};
+    await Promise.all(
+      codes.map(async (code) => {
+        const holdings = await fetchFundTopHoldings(code);
+        // null = 拉取失败或空仓披露，直接舍弃该基金（失败原因已在 quoteService 打日志）。
+        if (!holdings) return;
+        live[code] = holdings;
+      }),
+    );
+    return live;
+  } catch (err) {
+    console.warn("[xray] 实时重仓预拉取失败，本次扫描将只使用静态底稿", err);
+    return {};
+  }
+}
+
 export async function runXRayScan(): Promise<XRayReport> {
+  // 先尽力拉取每只基金的实时重仓；拿不到的由后端回退静态底稿或标记未穿透。
+  const liveHoldings = await fetchLiveFundHoldings();
   const { data, error } = await supabase.functions.invoke<{ report: Record<string, unknown> }>(
     "compute-xray-report",
-    { body: {} },
+    { body: { live_holdings: liveHoldings } },
   );
   if (error) throw error;
   if (!data?.report) throw new Error("empty_report");
