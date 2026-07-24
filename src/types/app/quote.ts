@@ -73,6 +73,17 @@ const STOCK_CODE_PREFIX_3 = new Set(["001", "002", "003"]);
 const FUND_CODE_PREFIX_2 = new Set(["15", "16", "18", "50", "51", "52", "56", "58"]);
 
 /**
+ * 「非股票」但仍按基金取净值行情的兜底类别。
+ * 现金理财常是货币/理财类基金，用户可能把带 6 位净值代码的场外基金填成这些类别；
+ * 只要代码不是明确股票段，就放行按基金行情处理。刻意不含银行存款/债券/保险，
+ * 避免它们随手填写的编号被误当成基金去请求。
+ */
+const FUND_ELIGIBLE_FALLBACK_CATEGORIES: ReadonlySet<AssetCategory> = new Set<AssetCategory>([
+  "cash_management",
+  "other",
+]);
+
+/**
  * 判断一条资产该走「股票」还是「基金」行情接口。
  *
  * 为什么不只看 `category`：手工录入 / OCR / CSV 导入时，基金与股票常被混填，
@@ -81,7 +92,8 @@ const FUND_CODE_PREFIX_2 = new Set(["15", "16", "18", "50", "51", "52", "56", "5
  *
  * 决策优先级：
  *   1. 代码去除市场前后缀后含字母且非 6 位 A 股格式 → 境外/港美股股票（如 AAPL、00700.HK）。
- *   2. 6 位纯数字代码按段位判断：命中明确基金段 → fund；命中明确股票段 → stock。
+ *   2. 6 位纯数字代码按段位判断：命中明确基金段 → fund；命中明确股票段 → stock；
+ *      未命中股票段但类别属于「现金理财/其他」→ 也按 fund（救回被误分类的场外基金）。
  *   3. 5 位纯数字代码 → 港股股票。
  *   4. 代码无法判断（段位重叠 / 无代码）→ 回落到 `category`。
  *   5. `category` 也非股票/基金 → 返回 null（无行情）。
@@ -103,6 +115,9 @@ export function classifyQuoteInstrument(
     const p3 = digits.slice(0, 3);
     if (FUND_CODE_PREFIX_2.has(p2)) return "fund";
     if (STOCK_CODE_PREFIX_2.has(p2) || STOCK_CODE_PREFIX_3.has(p3)) return "stock";
+    // 未命中明确股票段的 6 位数字几乎只能是场外开放式基金：
+    // 若类别属于「现金理财/其他」这类非股票兜底类别，也放行按基金取净值。
+    if (FUND_ELIGIBLE_FALLBACK_CATEGORIES.has(category)) return "fund";
   }
 
   // 3) 5 位数字 → 港股。

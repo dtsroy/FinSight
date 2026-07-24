@@ -34,7 +34,9 @@ from quote_api import get_fund_diff, get_stock_diff
 
 app = FastAPI(title="FinSight Quote API", version="0.1.0")
 
-# ── CORS: allow the Vite dev-server (local) and the cpolar tunnel origin ──
+# ── CORS: allow the Vite dev-server (local), the cpolar tunnel, and the
+#    Superun preview domains (their subdomain is generated per deploy, so we
+#    match the whole superun.yun family with a regex instead of hard-coding). ──
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -43,8 +45,9 @@ app.add_middleware(
         "http://localhost:3000",              # alternative dev port
         "http://55b599cd.r7.cpolar.top",     # cpolar intranet tunnel (http)
         "https://55b599cd.r7.cpolar.top",    # cpolar intranet tunnel (https)
-        # TODO: 把前端实际访问的域名也加进来，例如部署域名 / 预览域名
     ],
+    # 前端预览域名（如 https://id--xxx.superun.yun）每次部署都会变，用正则统配整个 superun.yun 子域。
+    allow_origin_regex=r"https://.*\.superun\.yun",
     allow_methods=["GET"],
     allow_headers=["*"],
 )
