@@ -14,7 +14,7 @@ import { classifyQuoteInstrument } from "@/types/app/quote";
  */
 const QUOTE_API_BASE =
   (import.meta.env.VITE_QUOTE_API_URL as string | undefined) ??
-  "https://47.116.77.105:8787";
+  "https://47.116.77.105";
 
 /**
  * 调试开关：分类算法决定去请求涨跌时，在控制台打印每条资产的判定结果与目标接口。
