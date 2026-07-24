@@ -13,6 +13,9 @@ Raise any exception on failure; main.py will convert it to HTTP 502.
 from datetime import datetime, timedelta
 
 import panda_data
+import json
+from requests import get
+
 
 with open("auth.local", "r") as f:
     auth = f.read().strip()
@@ -92,31 +95,6 @@ def get_stock_diff(code: str) -> float:
 
     return (close - pre_close) / pre_close * 100.0
 
-
-def _normalize_fund_symbol(code: str) -> str:
-    """
-    Append the correct exchange suffix for a Chinese fund ticker.
-
-    Exchange inference rules (by leading two digits):
-        51 / 58 / 50 / 56 / 57   → SH  (Shanghai ETF / LOF)
-        15 / 16 / 12 / 13        → SZ  (Shenzhen ETF / LOF)
-
-    If the code already contains a dot it is returned unchanged.
-    Bare codes that don't match any known prefix are passed through
-    as-is and let panda_data raise if the ticker is invalid.
-    """
-    code = code.strip().upper()
-    if "." in code:
-        return code
-    prefix = code[:2]
-    if prefix in ("51", "58", "50", "56", "57"):
-        return f"{code}.SH"
-    if prefix in ("15", "16", "12", "13"):
-        return f"{code}.SZ"
-    # Unknown prefix (e.g. open-end fund bare code) — pass through.
-    return code
-
-
 def get_fund_diff(code: str) -> float:
     """
     Return the latest trading-day change percentage for a fund.
@@ -124,15 +102,9 @@ def get_fund_diff(code: str) -> float:
     Pulls daily bars via ``panda_data.get_fund_daily`` over a short
     trailing window, takes the most recent row, and computes the
     percent change.
-
-    Priority for change calculation:
-      1. ``(close - pre_close) / pre_close * 100``  if ``pre_close`` column
-         is present and non-zero.
-      2. ``(close_t - close_{t-1}) / close_{t-1} * 100``  using the two
-         most recent rows as a fallback.
-
+    
     Args:
-        code: fund code, e.g. "510050" or "510050.SH".
+        code: fund code, e.g. "510050"
 
     Returns:
         Day change percentage as a float, e.g. -0.45 means -0.45 %.
@@ -140,40 +112,22 @@ def get_fund_diff(code: str) -> float:
     Raises:
         RuntimeError: if no daily data is available for the ticker.
     """
-    symbol = _normalize_fund_symbol(code)
-
-    # Look back ~15 calendar days so we still catch the latest trading day
-    # across weekends / holidays.
-    today = datetime.now()
-    start = today - timedelta(days=15)
-
-    df = panda_data.get_fund_daily(
-        symbol=symbol,
-        start_date=start.strftime("%Y%m%d"),
-        end_date=today.strftime("%Y%m%d"),
-    )
-
-    if df is None or df.empty:
-        raise RuntimeError(f"No daily data returned for fund '{symbol}'.")
-
-    df = df.sort_values("date")
-
-    # ── Strategy 1: use pre_close column ──────────────────────────────────
-    if "pre_close" in df.columns:
-        latest = df.iloc[-1]
-        close = float(latest["close"])
-        pre_close = float(latest["pre_close"])
-        if pre_close != 0:
-            return (close - pre_close) / pre_close * 100.0
-
-    # ── Strategy 2: derive from two consecutive rows ───────────────────────
-    if len(df) < 2:
-        raise RuntimeError(
-            f"Insufficient data to compute change for fund '{symbol}' "
-            "(need at least 2 trading days)."
-        )
-    prev_close = float(df.iloc[-2]["close"])
-    curr_close = float(df.iloc[-1]["close"])
-    if prev_close == 0:
-        raise RuntimeError(f"Invalid previous close (0) for fund '{symbol}'.")
-    return (curr_close - prev_close) / prev_close * 100.0
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
+        "hexin-v": "Axq-l0EVJHYeyajaNi1NQm3La8s5S54tEM8SySSTxq14l7T1DNvuNeBfYtr3",
+        "sec-ch-ua": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Microsoft Edge\";v=\"150\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "x-requested-with": "XMLHttpRequest"
+    }
+    html = get(f"https://fund.10jqka.com.cn/data/client/myfund/{code}/", headers=headers)
+    html.encoding = html.apparent_encoding
+    try:
+        return float(json.loads(html.text)['data'][0]['rate'])
+    except ValueError as e:
+        # 空值，尝试获得万份收益计算
+        return float(json.loads(html.text)['data'][0]['net']) / 1e4 * 1e2
