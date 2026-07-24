@@ -61,3 +61,55 @@ export const QUOTED_CATEGORIES: ReadonlySet<AssetCategory> = new Set<AssetCatego
 export function isQuotedCategory(category: AssetCategory): boolean {
   return QUOTED_CATEGORIES.has(category);
 }
+
+/** 行情接口种类：股票走股票源，基金走净值源；null 表示无行情。 */
+export type QuoteInstrument = "stock" | "fund";
+
+/** 明确的股票编码段（沪主板 60 / 科创 68 / 深主板·创业 00·30 / 北交所 4·8·92）。 */
+const STOCK_CODE_PREFIX_2 = new Set(["60", "68", "30", "43", "83", "87", "92"]);
+/** 深市股票三位段：中小板 002 / 主板 001·003（与场外基金 000 段区分开）。 */
+const STOCK_CODE_PREFIX_3 = new Set(["001", "002", "003"]);
+/** 明确的场内基金编码段（沪市 ETF/LOF 50~58 / 深市 15·16·18）。 */
+const FUND_CODE_PREFIX_2 = new Set(["15", "16", "18", "50", "51", "52", "56", "58"]);
+
+/**
+ * 判断一条资产该走「股票」还是「基金」行情接口。
+ *
+ * 为什么不只看 `category`：手工录入 / OCR / CSV 导入时，基金与股票常被混填，
+ * 而「代码」本身携带很强的市场信号（A 股与场内基金的编码段位互不重叠）。
+ * 因此优先用代码规则纠偏，代码不足以判断时再回落到用户填写的 `category`。
+ *
+ * 决策优先级：
+ *   1. 代码去除市场前后缀后含字母且非 6 位 A 股格式 → 境外/港美股股票（如 AAPL、00700.HK）。
+ *   2. 6 位纯数字代码按段位判断：命中明确基金段 → fund；命中明确股票段 → stock。
+ *   3. 5 位纯数字代码 → 港股股票。
+ *   4. 代码无法判断（段位重叠 / 无代码）→ 回落到 `category`。
+ *   5. `category` 也非股票/基金 → 返回 null（无行情）。
+ */
+export function classifyQuoteInstrument(
+  code: string | null | undefined,
+  category: AssetCategory,
+): QuoteInstrument | null {
+  const raw = (code ?? "").trim().toUpperCase();
+  const digits = raw.replace(/[^0-9]/g, "");
+  const hasLetters = /[A-Z]/.test(raw);
+
+  // 1) 字母型代码（且非「6 位数字 + 市场后缀」的 A 股写法）→ 境外股票。
+  if (hasLetters && digits.length !== 6) return "stock";
+
+  // 2) 6 位数字：按编码段位纠偏，只在段位明确时覆盖 category。
+  if (digits.length === 6) {
+    const p2 = digits.slice(0, 2);
+    const p3 = digits.slice(0, 3);
+    if (FUND_CODE_PREFIX_2.has(p2)) return "fund";
+    if (STOCK_CODE_PREFIX_2.has(p2) || STOCK_CODE_PREFIX_3.has(p3)) return "stock";
+  }
+
+  // 3) 5 位数字 → 港股。
+  if (!hasLetters && digits.length === 5) return "stock";
+
+  // 4~5) 代码无法判断，回落到用户填写的类别。
+  if (category === "stock") return "stock";
+  if (category === "fund") return "fund";
+  return null;
+}

@@ -27,7 +27,7 @@ import { formatByCurrency, formatCompact, formatCurrency, formatNumber } from "@
 import { CURRENCY_META, CURRENCY_ORDER, convertAmount, formatAmountForInput, parseAmountInput, toBaseAmount } from "@/lib/currency";
 import type { AssetBatchPatch, AssetListFilters } from "@/types/app/asset";
 import { CATEGORY_LABEL, CATEGORY_ORDER, type Asset, type AssetCategory, type AssetInput } from "@/types/app/asset";
-import { isQuotedCategory } from "@/types/app/quote";
+import { classifyQuoteInstrument } from "@/types/app/quote";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -253,6 +253,9 @@ export default function AssetsPage() {
                   const platformChanged = prevAsset ? prevAsset.platform !== asset.platform : false;
                   const meta = CURRENCY_META[asset.currency];
                   const isNonCny = asset.currency !== "CNY";
+                  // 用代码 + 类别的综合算法判断该资产是否有行情（基金/股票），决定是否展示涨跌。
+                  const quotable = classifyQuoteInstrument(asset.code, asset.category) !== null;
+                  const quote = pageQuotes.data?.[asset.id];
                   return <tr key={asset.id} className={`${isSelected ? "bg-primary/5" : "hover:bg-muted/30"} ${platformChanged ? "border-t-2 border-t-border/60" : ""}`}>
                     <td className="px-4 py-3">
                       <Checkbox
@@ -270,8 +273,10 @@ export default function AssetsPage() {
                       {isNonCny && <span className="ml-1 text-[10px] font-sans tracking-wider text-muted-foreground">{meta?.code ?? asset.currency}</span>}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      {isQuotedCategory(asset.category)
-                        ? <QuoteChangeBadge change={pageQuotes.data?.[asset.id]} loading={pageQuotes.isLoading} />
+                      {quotable
+                        ? (quote || pageQuotes.isLoading
+                            ? <QuoteChangeBadge change={quote} loading={pageQuotes.isLoading} />
+                            : <span className="text-xs text-muted-foreground/50">—</span>)
                         : <span className="text-xs text-muted-foreground/50">—</span>}
                     </td>
                     <td className="px-4 py-3 text-right"><div className="flex justify-end gap-1"><Button variant="ghost" size="icon" onClick={() => setEditing(asset)}><Pencil className="size-4" /></Button><Button variant="ghost" size="icon" onClick={() => setPendingDelete(asset)}><Trash2 className="size-4 text-destructive/70" /></Button></div></td>

@@ -5,7 +5,7 @@ import type {
   QuoteChangeMap,
   QuoteChangeRequest,
 } from "@/types/app/quote";
-import { isQuotedCategory } from "@/types/app/quote";
+import { classifyQuoteInstrument } from "@/types/app/quote";
 
 /**
  * Quote backend base URL — cpolar intranet tunnel.
@@ -52,11 +52,12 @@ export async function fetchAssetQuoteChanges(
 
   await Promise.all(
     requests.map(async (req) => {
-      if (!isQuotedCategory(req.category)) return;
+      // 用代码 + 类别的综合算法判断走股票还是基金行情接口；判不出来则跳过。
+      const instrument = classifyQuoteInstrument(req.code, req.category);
+      if (!instrument) return;
 
       const code = req.code ?? req.id;
-      const apiCategory = req.category === "stock" ? "stock" : "fund";
-      const changePct = await fetchChangePct(apiCategory, code);
+      const changePct = await fetchChangePct(instrument, code);
 
       if (changePct === null) return; // backend unreachable — skip silently
 

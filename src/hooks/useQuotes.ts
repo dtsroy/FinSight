@@ -2,14 +2,14 @@ import { useFxRates } from "@/hooks/useFxRates";
 import { fetchAssetQuoteChanges, summarizePortfolioChange } from "@/services/quoteService";
 import type { Asset } from "@/types/app/asset";
 import type { PortfolioQuoteChange, QuoteChangeMap, QuoteChangeRequest } from "@/types/app/quote";
-import { isQuotedCategory } from "@/types/app/quote";
+import { classifyQuoteInstrument } from "@/types/app/quote";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 /** 从资产列表里挑出「有行情」的条目，拼成查询入参。 */
 export function toQuoteRequests(assets: Pick<Asset, "id" | "code" | "category" | "amount" | "currency">[]): QuoteChangeRequest[] {
   return assets
-    .filter((asset) => isQuotedCategory(asset.category))
+    .filter((asset) => classifyQuoteInstrument(asset.code, asset.category) !== null)
     .map((asset) => ({
       id: asset.id,
       code: asset.code,
