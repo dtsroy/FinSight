@@ -388,7 +388,7 @@ function filtersActive(filters: AssetListFilters): boolean {
 }
 
 function SummaryCard({ label, value, note, loading, change }: { label: string; value: string; note?: string; loading?: boolean; change?: React.ReactNode }) {
-  return <section className="rounded-lg border border-border bg-card p-5"><div className="text-sm text-muted-foreground">{label}</div>{loading ? <Skeleton className="mt-3 h-8 w-32" /> : <strong className="mt-3 block text-2xl font-num">{value}</strong>}{change}{note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}</section>;
+  return <section className="rounded-lg border border-border bg-card p-5"><div className="text-sm text-muted-foreground">{label}</div>{loading ? <Skeleton className="mt-3 h-8 w-32" /> : <strong className="mt-3 block font-mono text-2xl tracking-tight">{value}</strong>}{change}{note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}</section>;
 }
 
 function EmptyState({ hasFilters }: { hasFilters: boolean }) {

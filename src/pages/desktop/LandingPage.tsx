@@ -17,9 +17,9 @@ const features = [
 const titleWords = ["分散", "安全", "稳健", "掌控"];
 const subWords = ["API 协同归集资产", "穿透剖析底层持仓", "宏观视角的压力测试", "极度理性的风控阻断"];
 const highlightColors = [
-  "from-orange-500/30 to-orange-400/20",
-  "from-blue-500/30 to-blue-400/20",
-  "from-yellow-500/30 to-yellow-400/20"
+  "from-warning/30 to-warning/20",
+  "from-info/30 to-info/20",
+  "from-success/30 to-success/20"
 ];
 
 const mockPieData = [
@@ -93,10 +93,9 @@ export default function LandingPage() {
   function formatEmail(email: string | null) {
     if (!email) return "";
     const parts = email.split("@");
-    if (parts.length !== 2) return email;
-    const [name, domain] = parts;
-    if (name.length <= 4) return email;
-    return `${name.slice(0, 2)}***${name.slice(-2)}@${domain}`;
+    const name = parts[0];
+    if (name.length <= 4) return name;
+    return `${name.slice(0, 2)}***${name.slice(-2)}`;
   }
 
   return (
@@ -243,7 +242,7 @@ export default function LandingPage() {
                   </ResponsiveContainer>
                   {/* Center Text */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold tracking-tighter text-foreground font-num">18.5%</span>
+                    <span className="font-mono text-3xl font-bold tracking-tighter text-foreground">18.5 %</span>
                     <span className="text-[10px] font-medium text-muted-foreground">贵州茅台</span>
                   </div>
                 </div>
@@ -260,14 +259,14 @@ export default function LandingPage() {
                     <span className="text-xs font-medium text-muted-foreground">高危行业集中度</span>
                     <Target className="size-4 text-muted-foreground/50 transition-colors group-hover/metric:text-foreground" />
                   </div>
-                  <b className="mt-3 block text-2xl tracking-tight text-foreground font-num">60<span className="text-lg text-muted-foreground">%+</span></b>
+                  <b className="mt-3 block font-mono text-2xl tracking-tight text-foreground">60 <span className="text-lg text-muted-foreground">%+</span></b>
                 </div>
                 <div className="group/metric flex flex-col items-start justify-between rounded-xl border border-border/50 bg-background/40 p-4 transition-colors hover:bg-background/80">
                   <div className="flex w-full items-center justify-between">
                     <span className="text-xs font-medium text-muted-foreground">流动性储备</span>
                     <TrendingUp className="size-4 text-muted-foreground/50 transition-colors group-hover/metric:text-foreground" />
                   </div>
-                  <b className="mt-3 block text-2xl tracking-tight text-foreground font-num">&lt; 3<span className="text-sm text-muted-foreground ml-1">个月</span></b>
+                  <b className="mt-3 block font-mono text-2xl tracking-tight text-foreground">&lt; 3 <span className="text-sm text-muted-foreground">个月</span></b>
                 </div>
               </div>
             </div>

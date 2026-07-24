@@ -113,7 +113,7 @@ function StressCard({ run }: { run: StressTestRun }) {
       <div className="mt-5 grid grid-cols-2 gap-4">
         <div>
           <p className="text-xs text-muted-foreground">预估亏损</p>
-          <b className={`mt-1 block text-2xl font-num ${severe ? "text-destructive" : "text-foreground"}`}>
+          <b className={`mt-1 block font-mono text-2xl tracking-tight ${severe ? "text-destructive" : "text-foreground"}`}>
             {formatCurrency(run.estimated_loss)}
           </b>
           <p className="text-xs text-muted-foreground">占组合 {run.loss_pct.toFixed(1)}%</p>
@@ -121,7 +121,7 @@ function StressCard({ run }: { run: StressTestRun }) {
         {isJobLoss ? (
           <div>
             <p className="text-xs text-muted-foreground">应急金覆盖</p>
-            <b className={`mt-1 block text-2xl font-num ${(run.emergency_months ?? 0) < 3 ? "text-destructive" : "text-foreground"}`}>
+            <b className={`mt-1 block font-mono text-2xl tracking-tight ${(run.emergency_months ?? 0) < 3 ? "text-destructive" : "text-foreground"}`}>
               {(run.emergency_months ?? 0).toFixed(1)} 个月
             </b>
             <p className="text-xs text-muted-foreground">硬性支出 {formatCurrency(run.detail.monthly_expense ?? 15000)}/月</p>
@@ -129,7 +129,7 @@ function StressCard({ run }: { run: StressTestRun }) {
         ) : (
           <div>
             <p className="text-xs text-muted-foreground">恢复期估计</p>
-            <b className="mt-1 block text-2xl font-num">{run.recovery_days ?? 0} 天</b>
+            <b className="mt-1 block font-mono text-2xl tracking-tight">{run.recovery_days ?? 0} 天</b>
             <p className="text-xs text-muted-foreground">按历史行情复原周期给出的估算值</p>
           </div>
         )}

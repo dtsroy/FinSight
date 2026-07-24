@@ -47,10 +47,9 @@ export default function AccountMenu({ email, isAnonymous, userId }: AccountMenuP
   function formatEmail(email: string | null) {
     if (!email) return "";
     const parts = email.split("@");
-    if (parts.length !== 2) return email;
-    const [name, domain] = parts;
-    if (name.length <= 4) return email;
-    return `${name.slice(0, 2)}***${name.slice(-2)}@${domain}`;
+    const name = parts[0];
+    if (name.length <= 4) return name;
+    return `${name.slice(0, 2)}***${name.slice(-2)}`;
   }
 
   const displayEmail = email ? formatEmail(email) : null;
@@ -58,7 +57,7 @@ export default function AccountMenu({ email, isAnonymous, userId }: AccountMenuP
 
   return (
     <>
-      <div className="border-t border-border p-4">
+      <div className="pt-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex w-full items-center gap-3 rounded-md border border-transparent px-2 py-2 text-left transition-colors hover:border-border hover:bg-secondary/50">

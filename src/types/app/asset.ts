@@ -113,10 +113,10 @@ export const CATEGORY_ORDER: AssetCategory[] = [
 
 export const CATEGORY_TONE: Record<AssetCategory, string> = {
   fund: "bg-primary",
-  stock: "bg-chart-4",
-  bank_deposit: "bg-chart-2",
+  stock: "bg-destructive",
+  bank_deposit: "bg-success",
   cash_management: "bg-warning",
-  insurance: "bg-chart-3",
-  bond: "bg-info",
+  insurance: "bg-info",
+  bond: "bg-primary/50",
   other: "bg-muted-foreground",
 };

@@ -16,6 +16,57 @@ import { Activity, ArrowRight, CircleDollarSign, PlusCircle, ShieldAlert, Wallet
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
+function EcgAnimation({ score }: { score: number }) {
+  // 分数越高越健康（心跳慢，约 3.5s）；分数越低越危险（心跳快，约 1.2s）
+  const duration = Math.max(1.2, (score / 100) * 3.5).toFixed(2);
+
+  return (
+    <div className="relative h-12 flex-1 overflow-hidden">
+      <svg className="absolute inset-0 h-full w-full">
+        <defs>
+          <pattern id="ecg-pattern-base" width="400" height="48" patternUnits="userSpaceOnUse">
+            <path 
+              d="M0,24 L170,24 L186,24 L189,11 L194.5,43 L201.5,-7 L207.5,32 L213,24 L223.5,24 L400,24" 
+              fill="none" 
+              stroke="hsl(var(--border))" 
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </pattern>
+          <pattern id="ecg-pattern-mask" width="400" height="48" patternUnits="userSpaceOnUse">
+            <path 
+              d="M0,24 L170,24 L186,24 L189,11 L194.5,43 L201.5,-7 L207.5,32 L213,24 L223.5,24 L400,24" 
+              fill="none" 
+              stroke="#fff" 
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </pattern>
+          <mask id="ecg-mask-pattern">
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-pattern-mask)" />
+          </mask>
+        </defs>
+        
+        {/* 底层暗色线 */}
+        <rect x="0" y="0" width="100%" height="100%" fill="url(#ecg-pattern-base)" />
+      </svg>
+
+      {/* 扫描的光带（通过 scan-horizontal 动画从左到右移动） */}
+      <div 
+        className="absolute top-0 left-0 h-full w-[80%] opacity-80 mix-blend-plus-lighter"
+        style={{
+          background: "linear-gradient(90deg, transparent 0%, hsl(var(--warning)) 30%, hsl(var(--info)) 50%, hsl(var(--success)) 70%, transparent 100%)",
+          animation: `scan-horizontal ${duration}s linear infinite`,
+          maskImage: "url(#ecg-mask-pattern)",
+          WebkitMaskImage: "url(#ecg-mask-pattern)",
+        }}
+      />
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const summary = useAssetSummary();
   const byCategory = useAssetsByCategory();
@@ -72,14 +123,14 @@ export default function DashboardPage() {
           <div>
             <p className="text-xs tracking-[.25em] text-muted-foreground">组合生命体征</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <b className="text-4xl text-primary font-num">{summary.isLoading ? "…" : healthScore}</b>
+              <b className="font-mono text-4xl tracking-tight text-primary">{summary.isLoading ? "…" : healthScore}</b>
               <span className="text-xs text-muted-foreground">/ 100</span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               综合现金缓冲、集中度、应急金覆盖三项计算。
             </p>
           </div>
-          <div className="pulse-line h-12 flex-1" />
+          <EcgAnimation score={summary.isLoading ? 100 : healthScore} />
           <div className="flex flex-col items-end gap-2">
             <p className="flex items-center gap-2 text-xs text-primary">
               <span className="size-2 rounded-full bg-primary animate-pulse" />账本实时同步中
@@ -121,7 +172,7 @@ export default function DashboardPage() {
           label="应急金覆盖"
           value={profile.isLoading ? null : `${emergencyMonths.toFixed(1)} 个月`}
           note={`每月硬性支出 ${formatCurrency(monthlyExpense)}`}
-          icon={<Activity className="size-4 text-chart-2" />}
+          icon={<Activity className="size-4 text-success" />}
           highlight={emergencyMonths < 3}
         />
         <MetricCard
@@ -265,7 +316,7 @@ function MetricCard({ label, value, note, icon, highlight, change }: { label: st
   return (
     <section className={`rounded-lg border p-5 shadow-sm ${highlight ? "border-warning/40 bg-warning/10" : "border-border bg-card"}`}>
       <div className="flex items-center justify-between text-sm text-muted-foreground">{label}{icon}</div>
-      {value == null ? <Skeleton className="mt-4 h-8 w-40" /> : <strong className="mt-4 block text-3xl tracking-tight text-primary md:text-4xl font-num">{value}</strong>}
+      {value == null ? <Skeleton className="mt-4 h-8 w-40" /> : <strong className="mt-4 block font-mono text-3xl tracking-tight text-primary md:text-4xl">{value}</strong>}
       {change && <div className="mt-2">{change}</div>}
       {note && <p className="mt-3 text-xs text-muted-foreground">{note}</p>}
     </section>

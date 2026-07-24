@@ -113,7 +113,6 @@ export default {
           sans: ["var(--font-sans)"],
           serif: ["var(--font-serif)"],
           mono: ["var(--font-mono)"],
-          num: ["var(--font-num)"],
         },
             keyframes: {
                 "accordion-down": {
