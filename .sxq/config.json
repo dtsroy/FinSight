@@ -1,0 +1,27 @@
+{
+  "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
+  "linkedAt": "2026-07-24T02:34:58.566Z",
+  "session": {
+    "archiveStatus": 0,
+    "createdAt": 1784776303000,
+    "extra": {
+      "isRemix": false
+    },
+    "id": 49030,
+    "lastHeartbeat": 1784813400000,
+    "lastMessageId": "8c00f71bb97749b587646cc27701fae3",
+    "lastReplyMessageId": "1538722ee73d463bb6378a9b79f5caa2",
+    "manualArchiveAllowed": true,
+    "ownerId": "1871421051895812",
+    "ownerType": "user",
+    "previewImage": "https://b.ux-cdn.com/uxarts/files/t20260723204712/7l4p91na.png",
+    "publicStatus": 0,
+    "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
+    "sessionKey": "ai-financial-xray",
+    "sharedToMe": false,
+    "stage": 3,
+    "status": 3,
+    "topic": "财务X光",
+    "updatedAt": 1784860483000
+  }
+}

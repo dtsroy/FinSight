@@ -1,0 +1,28 @@
+project_id = "bv0atyuqnuwjoaxr70wz"
+
+[functions.s3-pre-sign-url]
+verify_jwt = true
+
+[functions.parse-asset-csv]
+verify_jwt = true
+
+[functions.recognize-holdings-ocr]
+verify_jwt = true
+
+[functions.seed-demo-portfolio]
+verify_jwt = true
+
+[functions.compute-xray-report]
+verify_jwt = true
+
+[functions.run-stress-test]
+verify_jwt = true
+
+[functions.ai-doctor-chat]
+verify_jwt = true
+
+[functions.create-shared-report]
+verify_jwt = true
+
+[functions.read-shared-report]
+verify_jwt = false
