@@ -42,8 +42,19 @@ export default function AccountMenu({ email, isAnonymous, userId }: AccountMenuP
     }
   }
 
-  const displayName = email ?? "游客账户";
   const shortId = userId ? userId.slice(0, 6) : "----";
+
+  function formatEmail(email: string | null) {
+    if (!email) return "";
+    const parts = email.split("@");
+    if (parts.length !== 2) return email;
+    const [name, domain] = parts;
+    if (name.length <= 4) return email;
+    return `${name.slice(0, 2)}***${name.slice(-2)}@${domain}`;
+  }
+
+  const displayEmail = email ? formatEmail(email) : null;
+  const displayName = displayEmail ?? "游客账户";
 
   return (
     <>
@@ -55,7 +66,7 @@ export default function AccountMenu({ email, isAnonymous, userId }: AccountMenuP
                 {isAnonymous ? <CircleUser className="size-5" /> : <ShieldCheck className="size-5" />}
               </span>
               <span className="min-w-0 flex-1">
-                <b className="block truncate text-sm">{displayName}</b>
+                <b className="block text-sm break-all">{displayName}</b>
                 <small className="font-mono text-[10px] text-muted-foreground">
                   {isAnonymous ? `本设备 · ${shortId}` : `已登录 · ${shortId}`}
                 </small>

@@ -45,7 +45,7 @@ export default function LandingPage() {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -90,6 +90,15 @@ export default function LandingPage() {
     }
   }
 
+  function formatEmail(email: string | null) {
+    if (!email) return "";
+    const parts = email.split("@");
+    if (parts.length !== 2) return email;
+    const [name, domain] = parts;
+    if (name.length <= 4) return email;
+    return `${name.slice(0, 2)}***${name.slice(-2)}@${domain}`;
+  }
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       {/* 顶栏 (滚动时浮现边界与毛玻璃) */}
@@ -112,7 +121,7 @@ export default function LandingPage() {
           ) : (
             <>
               <span className="hidden text-xs text-muted-foreground md:inline">
-                已登录 · <span className="font-mono">{identity.email}</span>
+                已登录 · <span className="font-mono">{formatEmail(identity.email)}</span>
               </span>
               <Link to="/dashboard" className="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm">
                 进入账本 <ArrowRight className="size-3.5" />
