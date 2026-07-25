@@ -1,7 +1,8 @@
 import AccountDialog from "@/components/desktop/AccountDialog";
+import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
-import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
+import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -103,10 +104,7 @@ export default function LandingPage() {
       {/* 顶栏 (滚动时浮现边界与毛玻璃) */}
       <nav className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "border-b border-border/40 bg-background/80 backdrop-blur-lg" : "bg-transparent"}`}>
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-5 md:px-10">
-          <span className="flex items-center gap-3 font-bold tracking-tight">
-            <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background"><Activity className="size-4" /></span>
-            FinSight
-          </span>
+          <SiteLogo iconClassName="size-8" />
         <div className="flex items-center gap-2 md:gap-4">
           {identity.isAnonymous ? (
             <>

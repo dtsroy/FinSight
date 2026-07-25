@@ -1,6 +1,7 @@
 import AccountMenu from "@/components/desktop/AccountMenu";
+import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
-import { Activity, FileScan, FlaskConical, ListChecks, MessageCircle, Moon, PieChart, Sun, Upload } from "lucide-react";
+import { FileScan, FlaskConical, ListChecks, MessageCircle, Moon, PieChart, Sun, Upload } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,8 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen md:flex">
       <aside className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur md:flex md:h-screen md:w-64 md:flex-col md:border-b-0 md:border-r">
-        <NavLink to="/" className="flex h-20 items-center gap-3 border-b border-border px-5">
-          <span className="grid size-10 place-items-center rounded-lg bg-foreground text-background"><Activity /></span>
-          <span className="font-bold tracking-tight text-foreground">FinSight</span>
+        <NavLink to="/" className="flex h-20 items-center border-b border-border px-5">
+          <SiteLogo />
         </NavLink>
         <nav className="flex gap-1 overflow-x-auto p-3 md:flex-1 md:flex-col md:overflow-y-auto md:p-4">
           {navigation.map(({ to, label, icon: Icon }) => (

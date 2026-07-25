@@ -1,10 +1,11 @@
+import SiteLogo from "@/components/SiteLogo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPublicReport } from "@/services/reportService";
 import type { SharedReportSnapshot } from "@/types/app/analytics";
 import { useQuery } from "@tanstack/react-query";
 import * as htmlToImage from "html-to-image";
-import { Activity, ArrowRight, Download, Home, ShieldAlert, TimerReset } from "lucide-react";
+import { ArrowRight, Download, Home, ShieldAlert, TimerReset } from "lucide-react";
 import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -84,8 +85,8 @@ export default function SharedReportPage() {
   return (
     <div className="min-h-screen py-6">
       <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-6">
-        <Link to="/" className="flex items-center gap-2 text-sm text-primary hover:underline">
-          <Activity className="size-4" />财务 X 光
+        <Link to="/" className="text-sm text-primary hover:underline">
+          <SiteLogo iconClassName="size-4" label="财务 X 光" textClassName="" className="gap-2" />
         </Link>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>有效期至 {formatDate(q.data.expires_at)}</span>
