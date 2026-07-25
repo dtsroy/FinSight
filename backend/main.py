@@ -12,6 +12,12 @@ GET /get_fund_diff?code=<fund_code>
 GET /get_fund_zc?code=<fund_code>
     Returns the fund's latest disclosed top stock holdings (重仓股).
 
+GET /get_name_from_code?code=<ticker>
+    Returns the security name for a stock code.
+
+GET /get_industry_from_code?code=<ticker>
+    Returns the industry (sector) name for a stock code.
+
 Response shape (diff endpoints)
 ---------------------------------
 {
@@ -28,6 +34,20 @@ Response shape (/get_fund_zc)
 Funds with no disclosed stock holdings (e.g. money-market funds) return
 an empty "holdings" list — callers should treat that as "not penetrable".
 
+Response shape (/get_name_from_code)
+---------------------------------
+{
+    "code": "600519",       # echoes the requested code
+    "name": "贵州茅台"       # security short name
+}
+
+Response shape (/get_industry_from_code)
+---------------------------------
+{
+    "code":     "600519",   # echoes the requested code
+    "industry": "白酒"      # sector / industry classification name
+}
+
 Error shape (HTTP 400 / 502)
 -----------------------------
 {
@@ -42,7 +62,13 @@ Run locally
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from quote_api import get_fund_diff, get_fund_zc, get_stock_diff
+from quote_api import (
+    get_fund_diff,
+    get_fund_zc,
+    get_industry_from_code,
+    get_name_from_code,
+    get_stock_diff,
+)
 
 app = FastAPI(title="FinSight Quote API", version="0.1.0")
 
@@ -115,6 +141,34 @@ def route_fund_zc(
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Upstream error: {exc}") from exc
     return {"code": code.strip(), "holdings": holdings}
+
+
+@app.get("/get_name_from_code")
+def route_name_from_code(
+    code: str = Query(..., description="Stock ticker, e.g. '600519' or '600519.SH'"),
+):
+    """Return the security name for a stock code."""
+    if not code.strip():
+        raise HTTPException(status_code=400, detail="'code' must not be empty.")
+    try:
+        name = get_name_from_code(code.strip())
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Upstream error: {exc}") from exc
+    return {"code": code.strip(), "name": name}
+
+
+@app.get("/get_industry_from_code")
+def route_industry_from_code(
+    code: str = Query(..., description="Stock ticker, e.g. '600519' or '600519.SH'"),
+):
+    """Return the industry (sector) name for a stock code."""
+    if not code.strip():
+        raise HTTPException(status_code=400, detail="'code' must not be empty.")
+    try:
+        industry = get_industry_from_code(code.strip())
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Upstream error: {exc}") from exc
+    return {"code": code.strip(), "industry": industry}
 
 
 # ──────────────────────────────────────────────────────────────────────────────

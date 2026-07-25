@@ -2,10 +2,11 @@ import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
 import ShareReportPanel from "@/components/desktop/ShareReportPanel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStockIndustries } from "@/hooks/useStockIndustries";
 import { useStockNames } from "@/hooks/useStockNames";
 import { useLatestXRay, useRunXRay } from "@/hooks/useXray";
 import { formatCurrency } from "@/lib/asset-format";
-import type { XRayReport } from "@/types/app/analytics";
+import type { XRayReport, XRayStock } from "@/types/app/analytics";
 import { FileScan, Loader2, ScanLine } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,9 @@ import { toast } from "sonner";
 const DUPLICATE_ALERT_MIN_PCT = 1;
 const DUPLICATE_ALERT_MAX_COUNT = 5;
 
+/** Top 行业榜单条数。 */
+const TOP_INDUSTRY_COUNT = 5;
+
 function fmtPct(n: number, digits = 1): string {
   return `${n.toFixed(digits)}%`;
 }
@@ -21,6 +25,21 @@ function fmtPct(n: number, digits = 1): string {
 /** 无代码个股占位符 `__nocode_<id>` → 展示为 "—"，避免把内部 id 泄漏给用户。 */
 function displayCode(code: string): string {
   return code.startsWith("__nocode_") ? "—" : code;
+}
+
+/** 统一的个股展示名：查到名称显示 `名称（代码）`，否则退回 code 本身。 */
+function stockLabel(stockCode: string, nameMap: Record<string, string>): string {
+  const code = displayCode(stockCode);
+  const name = nameMap[stockCode];
+  return name ? `${name}（${code}）` : code;
+}
+
+/** 穿透后按行业聚合的一条榜单数据。 */
+interface IndustryExposure {
+  industry: string;
+  amount: number;
+  pct: number;
+  stocks: XRayStock[];
 }
 
 export default function XRayPage() {
@@ -115,15 +134,52 @@ function XRayReportView({ report }: { report: XRayReport }) {
       .slice(0, DUPLICATE_ALERT_MAX_COUNT);
   }, [report.duplicate_holdings]);
 
-  // Top10 与重仓预警展示要拿名称的股票代码合起来去查一次。
+  // Top10 / 重仓预警 / Top5 行业的个股都要展示名称，把全部穿透后个股代码合起来查一次。
   const codesForNames = useMemo(() => {
     const set = new Set<string>();
-    for (const s of top10) if (!s.stock_code.startsWith("__nocode_")) set.add(s.stock_code);
+    for (const s of report.top_stocks) if (!s.stock_code.startsWith("__nocode_")) set.add(s.stock_code);
     for (const d of duplicateAlerts) if (!d.stock_code.startsWith("__nocode_")) set.add(d.stock_code);
     return Array.from(set);
-  }, [top10, duplicateAlerts]);
+  }, [report.top_stocks, duplicateAlerts]);
   const names = useStockNames(codesForNames);
   const nameMap = names.data ?? {};
+
+  // Top5 行业：对全部穿透后个股（基金按披露权重折算 + 直接持股）逐只查行业后聚合。
+  const codesForIndustries = useMemo(
+    () => report.top_stocks.map((s) => s.stock_code).filter((c) => !c.startsWith("__nocode_")),
+    [report.top_stocks],
+  );
+  const industries = useStockIndustries(codesForIndustries);
+  const industryMap = industries.data ?? {};
+
+  const { topIndustries, unclassifiedAmount } = useMemo(() => {
+    const agg = new Map<string, IndustryExposure>();
+    let unknown = 0;
+    for (const s of report.top_stocks) {
+      const industry = s.stock_code.startsWith("__nocode_") ? undefined : industryMap[s.stock_code];
+      if (!industry) {
+        unknown += s.amount;
+        continue;
+      }
+      let entry = agg.get(industry);
+      if (!entry) {
+        entry = { industry, amount: 0, pct: 0, stocks: [] };
+        agg.set(industry, entry);
+      }
+      entry.amount += s.amount;
+      entry.stocks.push(s);
+    }
+    const denominator = report.total_amount || 1;
+    const ranked = Array.from(agg.values())
+      .map((e) => ({
+        ...e,
+        pct: (e.amount / denominator) * 100,
+        stocks: [...e.stocks].sort((a, b) => b.amount - a.amount),
+      }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, TOP_INDUSTRY_COUNT);
+    return { topIndustries: ranked, unclassifiedAmount: unknown };
+  }, [report.top_stocks, report.total_amount, industryMap]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -138,28 +194,60 @@ function XRayReportView({ report }: { report: XRayReport }) {
           <p className="text-sm text-muted-foreground">尚无穿透后的个股（可能你的账本里没有基金 / 股票）。</p>
         ) : (
           <ol className="space-y-3 text-sm">
-            {top10.map((s, i) => {
-              const code = displayCode(s.stock_code);
-              const displayName = nameMap[s.stock_code];
-              return (
-                <li key={s.stock_code} className="rounded-md border border-border bg-secondary/30 px-3 py-2">
+            {top10.map((s, i) => (
+              <li key={s.stock_code} className="rounded-md border border-border bg-secondary/30 px-3 py-2">
+                <div className="flex items-center justify-between gap-3">
+                  <b className="min-w-0 truncate font-mono text-foreground">{i + 1}. {stockLabel(s.stock_code, nameMap)}</b>
+                  <span className={`shrink-0 font-mono ${s.pct > 12 ? "text-destructive" : s.pct > 6 ? "text-warning" : "text-foreground"}`}>{fmtPct(s.pct)}</span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  来源：{s.sources.map((x) => x.direct ? "直接持股" : x.fund_name).filter(Boolean).slice(0, 3).join("；")}
+                  {s.sources.length > 3 && ` 等 ${s.sources.length} 处`}
+                </p>
+              </li>
+            ))}
+          </ol>
+        )}
+      </article>
+
+      <article className="rounded-lg border border-border bg-card p-5">
+        <h2 className="mb-1 font-medium">Top 5 行业</h2>
+        <p className="text-xs text-muted-foreground">按穿透后个股（基金按披露权重折算你的实际金额 + 直接持股）逐只查行业后聚合，看清真实的行业集中度。</p>
+        {industries.isLoading ? (
+          <div className="mt-4 space-y-3">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        ) : topIndustries.length === 0 ? (
+          <div className="mt-4 rounded-md border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            暂无可识别行业的穿透个股（行情后端不可用或个股均无行业数据）。
+          </div>
+        ) : (
+          <>
+            <ol className="mt-4 space-y-3 text-sm">
+              {topIndustries.map((ind, i) => (
+                <li key={ind.industry} className="rounded-md border border-border bg-secondary/30 px-3 py-2">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <b className="font-mono text-foreground">{i + 1}. {code}</b>
-                      {displayName && (
-                        <span className="ml-2 text-xs text-muted-foreground">{displayName}</span>
-                      )}
-                    </div>
-                    <span className={`shrink-0 font-mono ${s.pct > 12 ? "text-destructive" : s.pct > 6 ? "text-warning" : "text-foreground"}`}>{fmtPct(s.pct)}</span>
+                    <b className="min-w-0 truncate text-foreground">{i + 1}. {ind.industry}</b>
+                    <span className={`shrink-0 font-mono ${ind.pct > 40 ? "text-destructive" : ind.pct > 25 ? "text-warning" : "text-foreground"}`}>{fmtPct(ind.pct)}</span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    来源：{s.sources.map((x) => x.direct ? "直接持股" : x.fund_name).filter(Boolean).slice(0, 3).join("；")}
-                    {s.sources.length > 3 && ` 等 ${s.sources.length} 处`}
+                    金额 <span className="font-mono text-foreground">{formatCurrency(ind.amount)}</span> · 共 {ind.stocks.length} 只个股
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    包含：{ind.stocks.slice(0, 3).map((s) => stockLabel(s.stock_code, nameMap)).join("、")}
+                    {ind.stocks.length > 3 && ` 等 ${ind.stocks.length} 只`}
                   </p>
                 </li>
-              );
-            })}
-          </ol>
+              ))}
+            </ol>
+            {unclassifiedAmount > 0 && (
+              <p className="mt-4 rounded-md border border-dashed border-border bg-secondary/20 p-3 text-xs leading-5 text-muted-foreground">
+                另有 <b className="font-mono text-foreground">{formatCurrency(unclassifiedAmount)}</b> 的穿透个股未能识别行业（无代码或行业数据缺失），未计入上方榜单。
+              </p>
+            )}
+          </>
         )}
       </article>
 

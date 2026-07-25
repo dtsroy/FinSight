@@ -13,7 +13,7 @@ import { classifyQuoteInstrument } from "@/types/app/quote";
  * Override via VITE_QUOTE_API_URL in .env.local when testing locally without the tunnel.
  * 用 https 地址，避免 HTTPS 页面调用 http 接口时被浏览器 Mixed Content 静默拦截。
  */
-const QUOTE_API_BASE =
+export const QUOTE_API_BASE =
   (import.meta.env.VITE_QUOTE_API_URL as string | undefined) ??
   "https://12471763.r7.cpolar.top";
 

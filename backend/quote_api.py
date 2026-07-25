@@ -151,3 +151,13 @@ def get_fund_zc(code: str) -> List[Dict[str, str|float]]:
         if stk['zcType'] == 'stock':
             ret.append({"code": stk['zcCode'], 'ccRate': float(stk['ccRate'])})
     return ret
+
+def get_name_from_code(code: str) -> str:
+    symbol = _normalize_symbol(code)
+    respose = panda_data.get_stock_detail(symbol, fields=['name'])
+    return respose['name'][0]
+
+def get_industry_from_code(code: str) -> str:
+    symbol = _normalize_symbol(code)
+    respose = panda_data.get_stock_detail(symbol, fields=['sector_code_name'])
+    return respose['sector_code_name'][0]
