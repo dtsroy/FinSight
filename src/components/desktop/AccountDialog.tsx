@@ -75,7 +75,7 @@ export default function AccountDialog({ open, onOpenChange, isAnonymous, default
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-mono tracking-[.18em] text-primary">
+          <DialogTitle className="text-xl font-semibold tracking-normal text-primary">
             {mode === "signin" ? "登入你的账户" : isAnonymous ? "保存到你的邮箱账户" : "注册财务 X 光"}
           </DialogTitle>
           <DialogDescription className="text-xs leading-6 text-muted-foreground">
@@ -102,7 +102,7 @@ export default function AccountDialog({ open, onOpenChange, isAnonymous, default
               <Label htmlFor="account-confirm" className="text-xs">再次输入密码</Label>
               <Input id="account-confirm" type="password" autoComplete="new-password" required={mode === "signup"} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="确认密码" />
             </TabsContent>
-            <Button type="submit" className="mt-2 w-full gap-2" disabled={submitting}>
+            <Button type="submit" className="mt-2 h-11 w-full gap-2 rounded-xl" disabled={submitting}>
               {submitting ? <Loader2 className="size-4 animate-spin" /> : mode === "signin" ? <LogIn className="size-4" /> : <UserPlus className="size-4" />}
               {mode === "signin" ? "登录" : isAnonymous ? "创建账户并保存资产" : "创建账户"}
             </Button>

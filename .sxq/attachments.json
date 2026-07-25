@@ -1,6 +1,6 @@
 {
   "sessionId": "1871421052944388-ca925de34ad74326a353f4a972da03b4",
-  "pulledAt": "2026-07-25T04:28:39.277Z",
+  "pulledAt": "2026-07-25T05:10:01.500Z",
   "tree": {
     "src": {
       "services": {
@@ -256,8 +256,8 @@
         },
         "desktop": {
           "AccountDialog.tsx": {
-            "rowKey": "ec3e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784802379702",
-            "hash": "1107a0d0d6655b14d963b7109a03738c15cf3b514791127da7f8c348c8ce55b1"
+            "rowKey": "ec3e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954385994",
+            "hash": "5825ece47aa7413d0913d2249577dbb7dce2022e41cefd12fb3c8f219deb1379"
           },
           "PlatformCell.tsx": {
             "rowKey": "66a61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784893767428",
@@ -325,8 +325,8 @@
               "hash": "4bfa182e937b082fb4c31195f79aa133d1bcf635843bd1bdb4ada6d17cab6292"
             },
             "XRayScannerPanel.tsx": {
-              "rowKey": "da511871421052944388-ca925de34ad74326a353f4a972da03b4_at1784953328573",
-              "hash": "1e238108b90113356c01fcaf9d19b1c4c713ea558629dffda43d485129aa072a"
+              "rowKey": "da511871421052944388-ca925de34ad74326a353f4a972da03b4_at1784953791571",
+              "hash": "fb9cae19aa92e4e29ac0d6f69cc20f56565936a0fdbe94a19ec6bf5d4b530e52"
             },
             "FeatureCards.tsx": {
               "rowKey": "c6871871421052944388-ca925de34ad74326a353f4a972da03b4_at1784951750058",
@@ -358,8 +358,8 @@
             "hash": "b9ae974cdf89e585cd608aec40aed6ef7ef6e4a603bd19f0bac6e87c42aacd43"
           },
           "ShareReportPanel.tsx": {
-            "rowKey": "eb281871421052944388-ca925de34ad74326a353f4a972da03b4_at1784796121503",
-            "hash": "7a32ae2a2a83231abb0ad6ba4cc7ee3648785271d10e23492073ae1b44a5a678"
+            "rowKey": "eb281871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954406767",
+            "hash": "7f7715396e214d0a9f96821c7fbcf057f7563c07bb4db360d6b1fa50ac18d7d1"
           },
           "Logo.tsx": {
             "rowKey": "c0521871421052944388-ca925de34ad74326a353f4a972da03b4_at1784908308929",
@@ -391,6 +391,106 @@
         "currency.ts": {
           "rowKey": "e7691871421052944388-ca925de34ad74326a353f4a972da03b4_at1784806385759",
           "hash": "4f47a2428599192e981dbd04ab45015eada7c4bb58aa0d4f6b93d47f79776b91"
+        }
+      },
+      "assets": {
+        "bank-logos": {
+          "att-5.svg": {
+            "rowKey": "3fa31871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955778447",
+            "hash": "65c2808292d3ca08bdf0d915e6eca3a9ebbeebba51feea797a70c244dc8b260c"
+          },
+          "alipay.svg": {
+            "rowKey": "7a261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466454",
+            "hash": "69df707c420ff9f2c2fc75ed40bbb43ee4668717a22132467dec1c778c3167e8"
+          },
+          "att-2.svg": {
+            "rowKey": "ccc11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955063614",
+            "hash": "0d386b0926c18c658b4c03d5ece904911e9662320bf757d8baae255b5d4392f2"
+          },
+          "boc.svg": {
+            "rowKey": "92671871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903823625",
+            "hash": "20a008dd93ff67fdacec5da4ca2b488e7b28d97d2246d0ac204e2846da26a56f"
+          },
+          "att-6.svg": {
+            "rowKey": "9c6b1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955855166",
+            "hash": "6aee6d987937ffb406801345cbcd3e2f1fcba4abf229a4ee5a1c74395f325d8f"
+          },
+          "ccb.svg": {
+            "rowKey": "ceb61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678611",
+            "hash": "6a407945b6bdc256f6f8a27ccce688268a5a9ad5b3d8478063dc9caba9042a14"
+          },
+          "pingan.svg": {
+            "rowKey": "33fd1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466469",
+            "hash": "0e90e15f84958d7490523288886c25793276eaec392855c1e29ac199becef539"
+          },
+          "att-1.svg": {
+            "rowKey": "c9a91871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954927821",
+            "hash": "6afa03cadf0225e684cb0803dd8c1780931e0e3b750c91410f077e56940f6f63"
+          },
+          "bocom.svg": {
+            "rowKey": "51a41871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903884094",
+            "hash": "57476b80a36d53ead459eb5f63c190a6bf32253e0028c5a48f9059d72fae9dab"
+          },
+          "wechat.svg": {
+            "rowKey": "41e91871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466477",
+            "hash": "f8321bdfa8f1779dfe2e1efa80e9055f5be7a92bcfd649ffdb2ba6882e66c753"
+          },
+          "citic.svg": {
+            "rowKey": "41dd1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678628",
+            "hash": "8d90edafcbc9da57103bf872be9cb62578a369c6aa09c6eba08b98ed5a059fce"
+          },
+          "cib.svg": {
+            "rowKey": "5a341871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678619",
+            "hash": "3837d8264b3fa89b1d8b6b4851c8e90eba9705c8664ac1f59f3fa4746f7a68fa"
+          },
+          "att-7.svg": {
+            "rowKey": "432f1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955944761",
+            "hash": "4fe50cf67f4ed7ed74b31affbca117b6e76455dfff7457aa2b6e0b9d1beccf9e"
+          },
+          "att-3.svg": {
+            "rowKey": "29621871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955276961",
+            "hash": "fcd815031109426b894b9298f62571a0604e031dea7e805360ee7fd4a09cc911"
+          },
+          "scb.svg": {
+            "rowKey": "af001871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678656",
+            "hash": "09687f3382964455c9f594481f8110200deac0fedb42e7d94f9d6aa10528c9ef"
+          },
+          "hsbc.svg": {
+            "rowKey": "385d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678648",
+            "hash": "a2578f39d57698be9b89c82b7df0592fb56ff1029e1490dc0338a099b914afbd"
+          },
+          "cmb.svg": {
+            "rowKey": "e4a31871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678639",
+            "hash": "9e722f908be88a2b69b2c080043488f545c114db4e62ca9016f970eadcbf7773"
+          },
+          "ceb.svg": {
+            "rowKey": "b0af1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784885104904",
+            "hash": "6bfec84e6a24d7c4644686ba21d8658e31f95b20a5be989d77a5b82b7e7949e2"
+          },
+          "abc.svg": {
+            "rowKey": "322e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903868047",
+            "hash": "43c901a73ecb47df40bcbe7480c27be915afb1e828a65abdb772deaceaff8174"
+          },
+          "att-4.svg": {
+            "rowKey": "73aa1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784955606471",
+            "hash": "2705bd3a0a8936be30f7a267870c73ca404df1da5d38d22fba650b8fc657457c"
+          },
+          "att-8.svg": {
+            "rowKey": "8a651871421052944388-ca925de34ad74326a353f4a972da03b4_at1784956129028",
+            "hash": "6f62baecb793205f954f83e1c5a5717d1333dbc52be257e408d2999e5fdcb00c"
+          },
+          "spb.svg": {
+            "rowKey": "4f0a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678665",
+            "hash": "f2d1ba6a366638c14d40684dccb18745c6877a2259a7f5f6be5306a017505433"
+          },
+          "icbc.svg": {
+            "rowKey": "d0b11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466462",
+            "hash": "073bbe9fe4e9e024c945fedbc2e080367da4206bc856dcefed8597e2330241b9"
+          }
+        },
+        "icon.svg": {
+          "rowKey": "2efa1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784943386163",
+          "hash": "816bf4bd5fc831a5ea876fb7a87fdf009fab37fb9624e93628a60d2844bfb91b"
         }
       },
       "hooks": {
@@ -461,74 +561,6 @@
             "rowKey": "39441871421052944388-ca925de34ad74326a353f4a972da03b4_at1784779816945",
             "hash": "5c93337a8efb23df78ab4b754f391d63f6e0b9d9ad100a95531c06a4f8aea9aa"
           }
-        }
-      },
-      "assets": {
-        "bank-logos": {
-          "alipay.svg": {
-            "rowKey": "7a261871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466454",
-            "hash": "69df707c420ff9f2c2fc75ed40bbb43ee4668717a22132467dec1c778c3167e8"
-          },
-          "boc.svg": {
-            "rowKey": "92671871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903823625",
-            "hash": "20a008dd93ff67fdacec5da4ca2b488e7b28d97d2246d0ac204e2846da26a56f"
-          },
-          "ccb.svg": {
-            "rowKey": "ceb61871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678611",
-            "hash": "6a407945b6bdc256f6f8a27ccce688268a5a9ad5b3d8478063dc9caba9042a14"
-          },
-          "pingan.svg": {
-            "rowKey": "33fd1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466469",
-            "hash": "0e90e15f84958d7490523288886c25793276eaec392855c1e29ac199becef539"
-          },
-          "bocom.svg": {
-            "rowKey": "51a41871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903884094",
-            "hash": "57476b80a36d53ead459eb5f63c190a6bf32253e0028c5a48f9059d72fae9dab"
-          },
-          "wechat.svg": {
-            "rowKey": "41e91871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466477",
-            "hash": "f8321bdfa8f1779dfe2e1efa80e9055f5be7a92bcfd649ffdb2ba6882e66c753"
-          },
-          "citic.svg": {
-            "rowKey": "41dd1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678628",
-            "hash": "8d90edafcbc9da57103bf872be9cb62578a369c6aa09c6eba08b98ed5a059fce"
-          },
-          "cib.svg": {
-            "rowKey": "5a341871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678619",
-            "hash": "3837d8264b3fa89b1d8b6b4851c8e90eba9705c8664ac1f59f3fa4746f7a68fa"
-          },
-          "scb.svg": {
-            "rowKey": "af001871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678656",
-            "hash": "09687f3382964455c9f594481f8110200deac0fedb42e7d94f9d6aa10528c9ef"
-          },
-          "hsbc.svg": {
-            "rowKey": "385d1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678648",
-            "hash": "a2578f39d57698be9b89c82b7df0592fb56ff1029e1490dc0338a099b914afbd"
-          },
-          "cmb.svg": {
-            "rowKey": "e4a31871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678639",
-            "hash": "9e722f908be88a2b69b2c080043488f545c114db4e62ca9016f970eadcbf7773"
-          },
-          "ceb.svg": {
-            "rowKey": "b0af1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784885104904",
-            "hash": "6bfec84e6a24d7c4644686ba21d8658e31f95b20a5be989d77a5b82b7e7949e2"
-          },
-          "abc.svg": {
-            "rowKey": "322e1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784903868047",
-            "hash": "43c901a73ecb47df40bcbe7480c27be915afb1e828a65abdb772deaceaff8174"
-          },
-          "spb.svg": {
-            "rowKey": "4f0a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784886678665",
-            "hash": "f2d1ba6a366638c14d40684dccb18745c6877a2259a7f5f6be5306a017505433"
-          },
-          "icbc.svg": {
-            "rowKey": "d0b11871421052944388-ca925de34ad74326a353f4a972da03b4_at1784902466462",
-            "hash": "073bbe9fe4e9e024c945fedbc2e080367da4206bc856dcefed8597e2330241b9"
-          }
-        },
-        "icon.svg": {
-          "rowKey": "2efa1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784943386163",
-          "hash": "816bf4bd5fc831a5ea876fb7a87fdf009fab37fb9624e93628a60d2844bfb91b"
         }
       },
       "pages": {
@@ -1212,16 +1244,16 @@
         "hash": "7c218a85638c0d3142962744af6c28574b067128d29e3f4b3131589b3a6dc150"
       },
       "project_landing_layout.md": {
-        "rowKey": "c00a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784953551398",
-        "hash": "f150aa380486c74ed89c8ac7172ef042f08b4f5fd1eb828e3c7fe568ba307bec"
+        "rowKey": "c00a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784953844060",
+        "hash": "a071c20fec26f1be4ee03aa2bb6ef1e2114ef30ce34363e6345db407e939710c"
       },
       "requirements.md": {
         "rowKey": "53551871421052944388-ca925de34ad74326a353f4a972da03b4_at1784790846228",
         "hash": "716e262f4644927075ff41a9e168aa7fc2c40f911df17eee7dc3fce5235e70d4"
       },
       "MEMORY.md": {
-        "rowKey": "336c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784952165947",
-        "hash": "99729b2ee3dde68f47bbdfea2e017cc17dccc25ad736ff2b54db612426691346"
+        "rowKey": "336c1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954468470",
+        "hash": "3e439e9a615d1f36b8409d22453a12c9c9afe40c5e553211e8ee9fe4ad516e60"
       },
       "project_multi_currency.md": {
         "rowKey": "5b331871421052944388-ca925de34ad74326a353f4a972da03b4_at1784806706776",
@@ -1238,6 +1270,10 @@
       "feedback_bank_logo_display.md": {
         "rowKey": "bf9a1871421052944388-ca925de34ad74326a353f4a972da03b4_at1784904106922",
         "hash": "d49d4aa887e962b40dfef2496d34a997aaf198ee44402c733beac75d00913f29"
+      },
+      "feedback_dialog_typography.md": {
+        "rowKey": "3c891871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954446102",
+        "hash": "091f2cfca5126eeb97d1fe3ed012988f601ea529105e8d2cbe1ff39cb7efd654"
       }
     },
     "vite.config.ts": {
@@ -1299,7 +1335,7 @@
       "hash": "2b050410a3a1e290c6f6a67f9e70f8c9b41409230cdc88a8799442ca253de9e9"
     },
     "pnpm-lock.yaml": {
-      "rowKey": "d4071871421052944388-ca925de34ad74326a353f4a972da03b4_at1784953602762",
+      "rowKey": "d4071871421052944388-ca925de34ad74326a353f4a972da03b4_at1784954506348",
       "hash": "daa64b2c2369b67d101ae8c60ade1c5c7101a395ef445182680062a9542534b7"
     },
     "README.md": {

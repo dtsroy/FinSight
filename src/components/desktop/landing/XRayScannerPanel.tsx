@@ -44,12 +44,12 @@ export default function XRayScannerPanel({
   }
 
   return (
-    <div className="group [perspective:1000px] relative">
+    <div className="group [perspective:1000px] relative h-full">
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="radiograph-panel relative overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur-2xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] md:p-6"
+        className="radiograph-panel relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/60 p-5 backdrop-blur-2xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] md:p-6"
         style={{
           transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
         }}
@@ -70,7 +70,9 @@ export default function XRayScannerPanel({
         {subtitle && (
           <p className="mt-3 text-sm font-medium text-foreground">{subtitle}</p>
         )}
-        <div className="relative z-20 mt-4">{children}</div>
+        <div className="relative z-20 mt-4 flex flex-1 items-center">
+          <div className="w-full">{children}</div>
+        </div>
         {footerNote && (
           <p className="relative z-20 mt-4 border-t border-border/40 pt-3 text-[11px] leading-5 text-muted-foreground">
             {footerNote}

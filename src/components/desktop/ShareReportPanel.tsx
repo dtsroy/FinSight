@@ -111,7 +111,7 @@ export default function ShareReportPanel({ compact }: { compact?: boolean }) {
               </Select>
             </div>
           </div>
-          <Button onClick={onCreate} disabled={create.isPending} className="w-full gap-2">
+          <Button onClick={onCreate} disabled={create.isPending} className="h-11 w-full gap-2 rounded-xl">
             <Link2 className="size-4" />{create.isPending ? "生成中…" : "生成新分享链接"}
           </Button>
           <div className="rounded-md border border-border bg-secondary/40 p-3">

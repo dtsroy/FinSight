@@ -6,3 +6,4 @@
 - [X 光页面 2×2：三块列表 + 两张图表（个股环形 + 行业柱状）](feedback_xray_no_industry.md) — Top10 / Top5 行业 / 跨基金重仓三列表，右列搭配完整行业分布柱状图与穿透后个股占比环形图；行业均走 Panda AI Quant 真实接口，查不到明确画"未识别"。
 - [金融数据源双引擎（Panda AI Quant + 同花顺）](project_quote_backend.md) — 涨跌 / 股票名称 / 行业 / 基金重仓全部走本地 Python FastAPI + cpolar HTTPS 隧道，不走 Superun 云端。
 - [Landing 页版式——五层海报结构 + 反向 marquee 空位占位](project_landing_layout.md) — Hero / X-Ray+StackShot 并排 / 六件武器 / 服务 marquee / OCR 机构 marquee；logo 卡空位完全数据驱动，只需改 items 的 src 字段。
+- [Dialog 中文排版与全宽按钮圆角](feedback_dialog_typography.md) — 中文 Dialog 标题禁用 font-mono + 大 tracking；Dialog 内 w-full 深色按钮统一 h-11 rounded-xl 避免“穿模”。

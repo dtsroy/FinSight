@@ -37,6 +37,11 @@ Landing 页 `/` 承担双角色：**对新用户**是产品介绍与试玩入口
 - 外壳：`XRayScannerPanel` from `@/components/desktop/landing/XRayScannerPanel`，承包 scanner-line 扫描动画、鼠标追随的 3D 倾斜、AGENT header、"诊断分析中"呼吸徽章、footer 说明。
 - 数据：`LandingPage.tsx` 顶部两个静态 mock 常量 `XRAY_DONUT_MOCK` / `XRAY_INDUSTRY_MOCK`，数值取自演示组合"小王"真实穿透输出，游客无需登录即可看到真实感十足的图。**不要**在 Landing 上真调 `useLatestXRay` / `useRunXRay`，那会引入 loading 态、破坏海报截图效果，也会强制未登录用户跑 API。
 - 数据来源变了 → 更新 mock 常量的数字即可，两个可视化组件本身零改动。
+- **两卡等高机制**：StockShareDonut 自然高约 208px，IndustryDistributionBar 按 `items.length * 36 + 40` 算出来大约 292px，两者天然差 60-80px。靠三层接力拉齐：
+  1. Section 2 的 grid 必须带 `items-stretch`；
+  2. `XRayScannerPanel` 外定 `h-full`、内层 tilt div 带 `flex h-full flex-col`；
+  3. children 容器写 `flex flex-1 items-center`，让图表在剥除 header/subtitle/footer 后的剩余空间里垂直居中。
+  需要把 Section 2 换成其他组件时，保留这三段 CSS，否则两卡会回到各发各高。
 
 ## 已废弃的 Section 2 设计（避免走回头路）
 
