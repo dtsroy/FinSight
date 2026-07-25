@@ -1,7 +1,8 @@
+import Logo from "@/components/desktop/Logo";
 import AccountDialog from "@/components/desktop/AccountDialog";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
-import { Activity, ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
+import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -104,7 +105,7 @@ export default function LandingPage() {
       <nav className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "border-b border-border/40 bg-background/80 backdrop-blur-lg" : "bg-transparent"}`}>
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-5 md:px-10">
           <span className="flex items-center gap-3 font-bold tracking-tight">
-            <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background"><Activity className="size-4" /></span>
+            <span className="grid size-8 place-items-center rounded-lg bg-foreground text-background"><Logo className="size-4" /></span>
             FinSight
           </span>
         <div className="flex items-center gap-2 md:gap-4">
@@ -161,7 +162,7 @@ export default function LandingPage() {
             可能只是棋局的表象。
           </h1>
           <p className="mt-8 max-w-2xl text-lg font-medium leading-relaxed text-muted-foreground md:text-xl text-center">
-            将机构级视野赋能给普通的 Pawn。<br />
+            将机构级视野赋能给普通的 Pawn<br />
             通过
             <span className="relative mx-3 inline-flex items-center justify-center">
               <span className={`absolute -inset-x-3 -inset-y-1 -skew-y-2 bg-gradient-to-r ${highlightColors[(activeIndex + 1) % highlightColors.length]} transition-colors duration-500`}></span>

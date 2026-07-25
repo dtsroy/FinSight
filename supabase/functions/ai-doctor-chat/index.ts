@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
   const [assetsRes, xrayRes, stressRunIdRes, historyRes, profileRes] = await Promise.all([
     supabase.from("assets").select("name, category, platform, amount, currency, code")
       .eq("user_id", userId),
-    supabase.from("xray_reports").select("id, created_at, concentration_score, top_industry, top_industry_pct, top_stocks, duplicate_holdings, alerts")
+    supabase.from("xray_reports").select("id, created_at, top_stocks, duplicate_holdings, alerts")
       .eq("user_id", userId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("stress_test_runs").select("run_id, created_at")
       .eq("user_id", userId).not("run_id", "is", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
@@ -365,15 +365,19 @@ function buildContext(input: {
   if (xray) {
     const stale = xrayFresh ? "" : `（该 X 光快照生成于 ${new Date(String(xray.created_at)).toLocaleString("zh-CN")}，超过 ${STALE_MINUTES} 分钟未刷新，可能已不反映最新账本）`;
     lines.push(`- 最近一次 X 光穿透 ${stale}：`);
-    lines.push(`  · 前三行业集中度合计 ${Number(xray.concentration_score).toFixed(1)}%，最高行业为 ${xray.top_industry ?? "N/A"}（${Number((xray.top_industry_pct as number) ?? 0).toFixed(1)}%）。`);
-    const stocks = (xray.top_stocks as { stock_name: string; pct: number }[] | undefined) ?? [];
+    const stocks = (xray.top_stocks as { stock_code?: string; pct: number }[] | undefined) ?? [];
     if (stocks.length > 0) {
-      const top5 = stocks.slice(0, 5).map((s) => `${s.stock_name} ${Number(s.pct).toFixed(1)}%`).join("，");
-      lines.push(`  · 穿透后 Top5 单票：${top5}。`);
+      const top5 = stocks.slice(0, 5)
+        .map((s) => `${displayStockCode(s.stock_code)} ${Number(s.pct).toFixed(1)}%`)
+        .join("，");
+      lines.push(`  · 穿透后 Top5 单票（股票代码）：${top5}。`);
+      const first = stocks[0];
+      if (first) lines.push(`  · 最重的一只占总资产 ${Number(first.pct).toFixed(1)}%。`);
     }
     const dupl = (xray.duplicate_holdings as unknown[] | undefined) ?? [];
     if (dupl.length > 0) lines.push(`  · ${dupl.length} 只个股被多只基金同时重仓（重复暴露）。`);
-    const alerts = (xray.alerts as { level: string; title: string }[] | undefined) ?? [];
+    const alerts = ((xray.alerts as { level: string; title: string }[] | undefined) ?? [])
+      .filter((a) => !/行业/.test(a.title));
     if (alerts.length > 0) lines.push(`  · 触发告警：${alerts.map((a) => `[${a.level}] ${a.title}`).join("；")}。`);
   } else {
     lines.push(`- 用户尚未生成过 X 光穿透报告，可主动引导他去 /xray 页跑一次。`);
@@ -406,4 +410,14 @@ function catLabel(cat: string): string {
     insurance: "保险", cash_management: "现金理财", other: "其他",
   };
   return map[cat] ?? cat;
+}
+
+/**
+ * 无代码个股内部占位为 `__nocode_<uuid>`，不能把 UUID 直接送给模型（也不能送给用户），
+ * 统一脱敏为“未标注个股”；无代码、空字符串同样处理。
+ */
+function displayStockCode(code: string | undefined | null): string {
+  const s = String(code ?? "").trim();
+  if (!s || s.startsWith("__nocode_")) return "未标注个股";
+  return s;
 }

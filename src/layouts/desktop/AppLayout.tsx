@@ -1,6 +1,7 @@
+import Logo from "@/components/desktop/Logo";
 import AccountMenu from "@/components/desktop/AccountMenu";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
-import { Activity, FileScan, FlaskConical, ListChecks, MessageCircle, Moon, PieChart, Sun, Upload } from "lucide-react";
+import { FileScan, FlaskConical, ListChecks, MessageCircle, Moon, PieChart, Sun, Upload } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export default function AppLayout() {
     <div className="min-h-screen md:flex">
       <aside className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur md:flex md:h-screen md:w-64 md:flex-col md:border-b-0 md:border-r">
         <NavLink to="/" className="flex h-20 items-center gap-3 border-b border-border px-5">
-          <span className="grid size-10 place-items-center rounded-lg bg-foreground text-background"><Activity /></span>
+          <span className="grid size-10 place-items-center rounded-lg bg-foreground text-background"><Logo className="size-5" /></span>
           <span className="font-bold tracking-tight text-foreground">FinSight</span>
         </NavLink>
         <nav className="flex gap-1 overflow-x-auto p-3 md:flex-1 md:flex-col md:overflow-y-auto md:p-4">
@@ -35,7 +36,7 @@ export default function AppLayout() {
         <div className="hidden flex-col gap-2 border-t border-border p-4 md:flex">
           <button 
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="flex w-full items-center gap-3 rounded-md border border-transparent px-4 py-3 text-sm transition-colors text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             {theme === "dark" ? "切换为浅色模式" : "切换为深色模式"}

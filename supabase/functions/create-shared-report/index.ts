@@ -150,27 +150,43 @@ function maskName(name: string): string {
   return n.slice(0, 2) + "*".repeat(Math.min(3, n.length - 4)) + n.slice(-2);
 }
 
+/** 兼容旧报告：把内部 `__nocode_<uuid>` 与显示不出来的空值都收敛为 “—”。 */
+function safeStockCode(code: unknown): string {
+  const s = String(code ?? "").trim();
+  if (!s || s.startsWith("__nocode_")) return "—";
+  return s;
+}
+
+/**
+ * 历史遗留兼容：
+ * - 旧 alerts 可能包含“XX 行业暴露过高”——行业维度已从产品中去除，分享页也不再展示；
+ * - 旧告警标题/正文中可能包含内部占位 `__nocode_<uuid>`，属于隐私泄露，必须脱敏。
+ */
+function sanitizeAlerts(alerts: unknown[]): unknown[] {
+  const NOCODE = /__nocode_[a-f0-9-]+/g;
+  return alerts
+    .map((a) => a as { level?: string; title?: string; message?: string })
+    .filter((a) => !/行业/.test(String(a.title ?? "")) && !/行业/.test(String(a.message ?? "")))
+    .map((a) => ({
+      level: a.level,
+      title: String(a.title ?? "").replace(NOCODE, "未标注个股"),
+      message: String(a.message ?? "").replace(NOCODE, "未标注个股"),
+    }));
+}
+
 function sanitizeXray(x: Record<string, unknown>): Record<string, unknown> {
-  const industry_exposure = (x.industry_exposure as { industry: string; amount: number; pct: number }[] | undefined) ?? [];
-  const top_stocks = (x.top_stocks as { stock_code: string; stock_name: string; industry: string; amount: number; pct: number; sources: { fund_code?: string | null; fund_name?: string | null; direct?: boolean; amount: number }[] }[] | undefined) ?? [];
-  const duplicate_holdings = (x.duplicate_holdings as { stock_code: string; stock_name: string; industry: string; total_pct: number; total_amount: number; funds: { fund_code: string; fund_name: string; amount: number }[] }[] | undefined) ?? [];
+  const top_stocks = (x.top_stocks as { stock_code?: string; amount: number; pct: number; sources: { fund_code?: string | null; fund_name?: string | null; direct?: boolean; amount: number }[] }[] | undefined) ?? [];
+  const duplicate_holdings = (x.duplicate_holdings as { stock_code?: string; total_pct: number; total_amount: number; funds: { fund_code: string; fund_name: string; amount: number }[] }[] | undefined) ?? [];
   const alerts = (x.alerts as unknown[] | undefined) ?? [];
   return {
     created_at: x.created_at,
     total_amount: Number(x.total_amount),
-    concentration_score: Number(x.concentration_score),
-    top_industry: x.top_industry ?? null,
-    top_industry_pct: x.top_industry_pct != null ? Number(x.top_industry_pct) : null,
-    industry_exposure: industry_exposure.map((i) => ({
-      industry: i.industry, amount: i.amount, pct: i.pct,
-    })),
+    // 分享页只展示代码 + 权重，个股名称由分享页后续自己按 code 查。
+    // 无代码 / 占位 code / 旧 snapshot 无 stock_code 字段，均统一呈现为 “—”。
     top_stocks: top_stocks.map((s) => ({
-      // 剥离 stock_code，个股名对预置底稿（真实上市公司名）保留，对无代码/未收录的直接持股脱敏
-      stock_name: s.stock_code.startsWith("__nocode_") ? maskName(s.stock_name) : s.stock_name,
-      industry: s.industry,
+      stock_code: safeStockCode(s.stock_code),
       amount: s.amount,
       pct: s.pct,
-      // 只保留基金名（同样是公开信息），去掉 fund_code
       sources: s.sources.map((src) => ({
         fund_name: src.fund_name ?? null,
         direct: !!src.direct,
@@ -178,13 +194,12 @@ function sanitizeXray(x: Record<string, unknown>): Record<string, unknown> {
       })),
     })),
     duplicate_holdings: duplicate_holdings.map((d) => ({
-      stock_name: d.stock_code.startsWith("__nocode_") ? maskName(d.stock_name) : d.stock_name,
-      industry: d.industry,
+      stock_code: safeStockCode(d.stock_code),
       total_pct: d.total_pct,
       total_amount: d.total_amount,
       funds: d.funds.map((f) => ({ fund_name: f.fund_name, amount: f.amount })),
     })),
-    alerts,
+    alerts: sanitizeAlerts(alerts),
   };
 }
 

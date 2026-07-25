@@ -1,9 +1,3 @@
-export interface XRayIndustryExposure {
-  industry: string;
-  amount: number;
-  pct: number;
-}
-
 export interface XRayStockSource {
   fund_code: string | null;
   fund_name: string | null;
@@ -11,19 +5,25 @@ export interface XRayStockSource {
   direct: boolean;
 }
 
+/**
+ * X 光穿透后的一只个股。
+ *
+ * 名称展示由前端根据 stock_code 通过外部接口异步查询后补齐（见 stockNameService），
+ * 本地不再从 stock_industry 表推断，也不再输出行业字段。
+ */
 export interface XRayStock {
   stock_code: string;
-  stock_name: string;
-  industry: string;
   amount: number;
   pct: number;
   sources: XRayStockSource[];
 }
 
+/**
+ * 跨基金重仓个股：同一支股票被 2 只及以上基金同时持有。
+ * 名称同样由前端后续接入外部接口按 code 查询。
+ */
 export interface XRayDuplicateHolding {
   stock_code: string;
-  stock_name: string;
-  industry: string;
   total_pct: number;
   total_amount: number;
   funds: { fund_code: string; fund_name: string; amount: number }[];
@@ -42,10 +42,6 @@ export interface XRayReport {
   fund_amount: number;
   stock_amount: number;
   cash_amount: number;
-  concentration_score: number;
-  top_industry: string | null;
-  top_industry_pct: number | null;
-  industry_exposure: XRayIndustryExposure[];
   top_stocks: XRayStock[];
   duplicate_holdings: XRayDuplicateHolding[];
   alerts: XRayAlert[];
@@ -124,12 +120,8 @@ export interface SharedReportSnapshot {
   xray: null | {
     created_at: string;
     total_amount: number;
-    concentration_score: number;
-    top_industry: string | null;
-    top_industry_pct: number | null;
-    industry_exposure: XRayIndustryExposure[];
-    top_stocks: { stock_name: string; industry: string; amount: number; pct: number; sources: { fund_name: string | null; direct: boolean; amount: number }[] }[];
-    duplicate_holdings: { stock_name: string; industry: string; total_pct: number; total_amount: number; funds: { fund_name: string; amount: number }[] }[];
+    top_stocks: { stock_code: string; amount: number; pct: number; sources: { fund_name: string | null; direct: boolean; amount: number }[] }[];
+    duplicate_holdings: { stock_code: string; total_pct: number; total_amount: number; funds: { fund_name: string; amount: number }[] }[];
     alerts: XRayAlert[];
   };
   stress_tests: StressTestRun[];

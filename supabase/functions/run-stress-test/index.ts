@@ -9,60 +9,69 @@ interface ScenarioTemplate {
   label: string;
   desc: string;
   recovery_days: number;
+  /**
+   * 按大类的下跌比例（0-1）。所有情景都以资产大类为单位施加冲击，
+   * 不再依赖任何"股票→行业"的映射数据。缺省资产大类使用 `other` 兜底。
+   */
   drops: Record<string, number>;
+  /** 失业类情景的资产折价率（沿用旧字段以保持数据结构不变）。 */
   category_drops?: Record<string, number>;
 }
+
+const CATEGORY_LABEL: Record<string, string> = {
+  stock: "股票",
+  fund: "基金",
+  bond: "债券",
+  insurance: "保险",
+  cash_management: "现金理财",
+  bank_deposit: "存款",
+  other: "其他",
+};
 
 const SCENARIOS: ScenarioTemplate[] = [
   {
     key: "crash_2015",
     label: "2015 股灾",
-    desc: "2015 年 6-8 月 A 股急速下跌，中小成长股跌幅最重。",
+    desc: "2015 年 6-8 月 A 股急速下跌，权益类资产（股票 / 偏股基金）冲击最大，固收类相对稳。",
     recovery_days: 720,
     drops: {
-      "食品饮料": 0.45,
-      "医疗生物": 0.5,
-      "电力设备": 0.55,
-      "电子科技": 0.6,
-      "金融": 0.35,
-      "家电": 0.4,
-      "互联网": 0.5,
-      "其他": 0.45,
-      "未知底层": 0.5,
+      stock: 0.55,
+      fund: 0.50,
+      bond: 0.05,
+      insurance: 0.05,
+      cash_management: 0.02,
+      bank_deposit: 0,
+      other: 0.30,
     },
   },
   {
     key: "pandemic_2020",
     label: "2020 疫情熔断",
-    desc: "2020 年 3 月全球疫情引发风险资产急跌，消费与出行冲击最大。",
+    desc: "2020 年 3 月全球风险资产急跌，股票基金短期回撤明显，之后快速修复。",
     recovery_days: 210,
     drops: {
-      "食品饮料": 0.15,
-      "医疗生物": 0.05,
-      "电力设备": 0.2,
-      "电子科技": 0.22,
-      "金融": 0.18,
-      "家电": 0.28,
-      "互联网": 0.16,
-      "其他": 0.2,
-      "未知底层": 0.18,
+      stock: 0.20,
+      fund: 0.18,
+      bond: 0.03,
+      insurance: 0.05,
+      cash_management: 0.01,
+      bank_deposit: 0,
+      other: 0.15,
     },
   },
   {
     key: "bear_2022",
     label: "2022 熊市",
-    desc: "2022 年全年新能源、消费板块显著回调，港股跌幅更大。",
+    desc: "2022 年全年新能源、消费板块显著回调，港股跌幅更大；权益类整体承压。",
     recovery_days: 540,
     drops: {
-      "食品饮料": 0.3,
-      "医疗生物": 0.25,
-      "电力设备": 0.42,
-      "电子科技": 0.35,
-      "金融": 0.12,
-      "家电": 0.2,
-      "互联网": 0.4,
-      "其他": 0.28,
-      "未知底层": 0.3,
+      stock: 0.28,
+      fund: 0.30,
+      bond: 0.02,
+      insurance: 0.03,
+      cash_management: 0.01,
+      bank_deposit: 0,
+      other: 0.20,
     },
   },
   {
@@ -71,7 +80,7 @@ const SCENARIOS: ScenarioTemplate[] = [
     desc: "假设失业 6 个月，且期间需要一次性支出 5 万元（急用钱）。",
     recovery_days: 0,
     drops: {},
-    category_drops: { "stock": 0.1, "fund": 0.1, "bond": 0.05, "insurance": 0.3 },
+    category_drops: { stock: 0.1, fund: 0.1, bond: 0.05, insurance: 0.3 },
   },
 ];
 
@@ -119,58 +128,11 @@ Deno.serve(async (req) => {
       .filter((a) => a.category === "bank_deposit" || a.category === "cash_management")
       .reduce((s, a) => s + toBaseAmount(a.amount, a.currency), 0);
 
-    const fundAssets = assets.filter((a) => a.category === "fund");
-    const stockAssets = assets.filter((a) => a.category === "stock");
-    const fundCodes = Array.from(new Set(fundAssets.map((a) => a.code).filter(Boolean).map(String)));
-    const stockCodes = Array.from(new Set(stockAssets.map((a) => a.code).filter(Boolean).map(String)));
-
-    const [holdingsRes, industriesRes] = await Promise.all([
-      supabase.from("fund_holdings").select("fund_code, industry, weight")
-        .in("fund_code", fundCodes.length ? fundCodes : ["__none__"]),
-      supabase.from("stock_industry").select("stock_code, industry")
-        .in("stock_code", stockCodes.length ? stockCodes : ["__none__"]),
-    ]);
-    if (holdingsRes.error || industriesRes.error) {
-      console.error("stress_reference_failed", holdingsRes.error, industriesRes.error);
-      return jsonResponse({ error: "reference_load_failed" }, 500);
-    }
-
-    const holdingsByFund = new Map<string, { industry: string; weight: number }[]>();
-    for (const h of (holdingsRes.data ?? []) as { fund_code: string; industry: string; weight: number }[]) {
-      if (!holdingsByFund.has(h.fund_code)) holdingsByFund.set(h.fund_code, []);
-      holdingsByFund.get(h.fund_code)!.push({ industry: h.industry, weight: Number(h.weight) });
-    }
-    const stockIndustryMap = new Map<string, string>(
-      (industriesRes.data ?? []).map((s: { stock_code: string; industry: string }) => [s.stock_code, s.industry]),
-    );
-
-    const industryAmount: Record<string, number> = {};
-    for (const fa of fundAssets) {
-      const amount = toBaseAmount(fa.amount, fa.currency);
-      if (!fa.code) {
-        industryAmount["未知底层"] = (industryAmount["未知底层"] ?? 0) + amount;
-        continue;
-      }
-      const items = holdingsByFund.get(String(fa.code));
-      if (!items || items.length === 0) {
-        industryAmount["未知底层"] = (industryAmount["未知底层"] ?? 0) + amount;
-        continue;
-      }
-      let disclosedPct = 0;
-      for (const h of items) disclosedPct += h.weight;
-      disclosedPct = Math.min(100, disclosedPct);
-      for (const h of items) {
-        industryAmount[h.industry] = (industryAmount[h.industry] ?? 0) + amount * (h.weight / 100);
-      }
-      const residualPct = Math.max(0, 100 - disclosedPct);
-      if (residualPct > 0) {
-        industryAmount["未知底层"] = (industryAmount["未知底层"] ?? 0) + amount * (residualPct / 100);
-      }
-    }
-    for (const sa of stockAssets) {
-      const amount = toBaseAmount(sa.amount, sa.currency);
-      const ind = sa.code ? (stockIndustryMap.get(String(sa.code)) ?? "其他") : "其他";
-      industryAmount[ind] = (industryAmount[ind] ?? 0) + amount;
+    // 按大类汇总资产，作为所有情景共用的冲击基准。
+    const categoryAmount: Record<string, number> = {};
+    for (const a of assets) {
+      const amt = toBaseAmount(a.amount, a.currency);
+      categoryAmount[a.category] = (categoryAmount[a.category] ?? 0) + amt;
     }
 
     const runId = crypto.randomUUID();
@@ -196,7 +158,7 @@ Deno.serve(async (req) => {
           const take = Math.min(catTotal, sourced);
           const loss = take * dropPct;
           estimatedLoss += loss;
-          breakdown.push({ key: cat, label: catLabel(cat), before: catTotal, after: catTotal - take, loss });
+          breakdown.push({ key: cat, label: CATEGORY_LABEL[cat] ?? cat, before: catTotal, after: catTotal - take, loss });
           sourced -= take;
         }
         const emergencyMonths = monthlyExpense > 0 ? cashAmount / monthlyExpense : 0;
@@ -227,11 +189,18 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      for (const [industry, amount] of Object.entries(industryAmount)) {
-        const dropPct = s.drops[industry] ?? s.drops["其他"] ?? 0.25;
+      for (const [cat, amount] of Object.entries(categoryAmount)) {
+        const dropPct = s.drops[cat] ?? s.drops.other ?? 0.25;
+        if (amount <= 0) continue;
         const loss = amount * dropPct;
         estimatedLoss += loss;
-        breakdown.push({ key: industry, label: industry, before: amount, after: amount * (1 - dropPct), loss });
+        breakdown.push({
+          key: cat,
+          label: CATEGORY_LABEL[cat] ?? cat,
+          before: amount,
+          after: amount * (1 - dropPct),
+          loss,
+        });
       }
       breakdown.sort((a, b) => b.loss - a.loss);
 
@@ -262,11 +231,3 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "unexpected" }, 500);
   }
 });
-
-function catLabel(cat: string): string {
-  const map: Record<string, string> = {
-    stock: "股票", fund: "基金", bond: "债券", insurance: "保险",
-    cash_management: "现金理财", bank_deposit: "存款", other: "其他",
-  };
-  return map[cat] ?? cat;
-}
