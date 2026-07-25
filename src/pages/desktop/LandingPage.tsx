@@ -8,11 +8,28 @@ import StockShareDonut, { type StockShareItem } from "@/components/desktop/xray/
 import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
+import att1 from "@/assets/bank-logos/att-1.svg";
+import att2 from "@/assets/bank-logos/att-2.svg";
+import att3 from "@/assets/bank-logos/att-3.svg";
+import att4 from "@/assets/bank-logos/att-4.svg";
+import att5 from "@/assets/bank-logos/att-5.svg";
+import att6 from "@/assets/bank-logos/att-6.svg";
+import att7 from "@/assets/bank-logos/att-7.svg";
+import att8 from "@/assets/bank-logos/att-8.svg";
 import { ArrowRight, LogIn, LogOut, ShieldCheck, Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
+
+/**
+ * STACK 区三张技术品牌 logo。这三张是位图（PNG）而非矢量图，托管在平台 CDN 上，
+ * 不进仓库：位图无需构建期处理，CDN 直出能被浏览器独立缓存。
+ * 换图 = 换这三个常量的 URL，Section 4 的卡片代码不需要动。
+ */
+const superunLogo = "https://b.ux-cdn.com/uxarts/20260725/58a9b1ee2ced40afa45368b1edc764bc.png";
+const qoderLogo = "https://b.ux-cdn.com/uxarts/20260725/68c7a4ea6cc949c3a79c92c0fc3c71e4.png";
+const pandaLogo = "https://b.ux-cdn.com/uxarts/20260725/aab30b9e05534e4e9b287e6d499952a6.png";
 
 const titleWords = ["分散", "安全", "稳健", "掌控"];
 const subWords = ["API 协同归集资产", "穿透剖析底层持仓", "宏观视角的压力测试", "极度理性的风控阻断"];
@@ -22,38 +39,20 @@ const highlightColors = [
   "from-success/30 to-success/20"
 ];
 
-/** 使用的服务 —— svg 到位前先渲染空位占位，后续把 `src` 填上即可无痛替换 */
-const SERVICES: LogoMarqueeItem[] = [
-  { label: "Superun AI Gateway", note: "视觉 + 推理大模型" },
-  { label: "Superun Cloud", note: "Postgres · Auth · Edge" },
-  { label: "Panda AI Quant", note: "A 股行情 · 名称 · 行业" },
-  { label: "同花顺 10jqka", note: "基金披露前 10 重仓" },
-  { label: "FastAPI + Uvicorn", note: "行情桥接后端" },
-  { label: "cpolar", note: "HTTPS 内网穿透" },
-  { label: "React 18 + Vite", note: "前端框架" },
-  { label: "Tailwind CSS", note: "样式引擎" },
-  { label: "shadcn/ui", note: "组件底座" },
-  { label: "Recharts", note: "数据可视化" },
-];
-
-/** 支持一键 OCR 识别的银行 / 机构 —— svg 到位前先渲染空位占位 */
+/**
+ * 支持一键 OCR 识别的银行 / 机构 —— 展示用户上传的 8 张品牌矢量图备用素材（att-1..8）。
+ * 展示态只显示 logo（LogoMarquee hideLabel），label 仅作为 React key / 无障碍 alt 使用，
+ * 不出现在视觉里，也不需要对应具体银行名。
+ */
 const OCR_BRANDS: LogoMarqueeItem[] = [
-  { label: "招商银行" },
-  { label: "建设银行" },
-  { label: "中国工商银行" },
-  { label: "中国银行" },
-  { label: "农业银行" },
-  { label: "交通银行" },
-  { label: "中信银行" },
-  { label: "兴业银行" },
-  { label: "浦发银行" },
-  { label: "平安银行" },
-  { label: "汇丰银行" },
-  { label: "渣打银行" },
-  { label: "支付宝 · 蚂蚁财富" },
-  { label: "微信" },
-  { label: "天天基金" },
-  { label: "同花顺" },
+  { label: "brand-1", src: att1 },
+  { label: "brand-2", src: att2 },
+  { label: "brand-3", src: att3 },
+  { label: "brand-4", src: att4 },
+  { label: "brand-5", src: att5 },
+  { label: "brand-6", src: att6 },
+  { label: "brand-7", src: att7 },
+  { label: "brand-8", src: att8 },
 ];
 
 /**
@@ -217,8 +216,8 @@ export default function LandingPage() {
           <p className="mt-6 flex items-center gap-2 text-xs font-medium text-muted-foreground/80">
             <ShieldCheck className="size-4" />
             {identity.isAnonymous
-              ? "游客模式仅在本设备保留数据；注册邮箱账户后可跨设备访问。"
-              : "你的账本、诊断和对话全部按账号隔离，任何人（含开发者）都无权访问。"}
+              ? "游客模式仅在本设备保留数据；注册邮箱账户后可跨设备访问"
+              : "你的账本、诊断和对话全部按账号隔离，任何人（含开发者）都无权访问"}
           </p>
         </section>
 
@@ -227,7 +226,7 @@ export default function LandingPage() {
           <XRayScannerPanel
             title="AGENT · X-RAY DONUT"
             subtitle="穿透后个股相对占比"
-            footerNote="Top 8 个股按占比由深到浅铺前景色；其余合并成「其他 12 只」；未穿透基金仓位单独归灰。"
+            footerNote="Top 8 个股按占比由深到浅铺前景色；其余合并成「其他 12 只」；未穿透基金仓位单独归灰"
           >
             <StockShareDonut items={XRAY_DONUT_MOCK} />
           </XRayScannerPanel>
@@ -235,7 +234,7 @@ export default function LandingPage() {
           <XRayScannerPanel
             title="AGENT · SECTOR BAR"
             subtitle="完整行业分布 · 100% 全资产画像"
-            footerNote="Top 5 行业 + 其他行业 + 未识别行业 + 未穿透基金一起拼齐，看清真实的行业集中度。"
+            footerNote="Top 5 行业 + 其他行业 + 未识别行业 + 未穿透基金一起拼齐，看清真实的行业集中度"
           >
             <IndustryDistributionBar items={XRAY_INDUSTRY_MOCK} />
           </XRayScannerPanel>
@@ -246,19 +245,37 @@ export default function LandingPage() {
           <LandingSectionHeader
             eyebrow="CAPABILITIES"
             title="FinSight 的六件武器"
-            desc="从截图导入到 AI 诊断，六个动作，把你的资产从散落各处的孤岛拉回同一张桌面。"
+            desc="从截图导入到 AI 诊断，六个动作，把你的资产从散落各处的孤岛拉回同一张桌面"
           />
           <FeatureCards />
         </section>
 
-        {/* ── Section 4 · 使用的服务（从右向左滑）───────────────────────── */}
+        {/* ── Section 4 · 使用的技术（居中固定展示）───────────────────────── */}
         <section className="mt-24">
           <LandingSectionHeader
             eyebrow="STACK"
-            title="我们的技术栈"
-            desc="从数据采集到模型推理，每一段路都交给最擅长的服务。图标待你回来补上，占位卡随后无缝替换。"
+            title="我们使用的技术"
+            desc="从数据采集到模型推理，每一段路都交给最擅长的服务"
           />
-          <LogoMarquee items={SERVICES} direction="left" />
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 px-4">
+            {[
+              { src: pandaLogo, alt: "Panda AI API" },
+              { src: superunLogo, alt: "Superun" },
+              { src: qoderLogo, alt: "Qoder" },
+            ].map((tech) => (
+              <div
+                key={tech.alt}
+                className="flex h-[104px] w-[240px] shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-white px-2 py-2 shadow-sm ring-1 ring-black/[0.02] transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-md dark:bg-white/95"
+              >
+                <img
+                  src={tech.src}
+                  alt={tech.alt}
+                  className="max-h-[88px] max-w-[90%] object-contain"
+                  draggable={false}
+                />
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* ── Section 5 · 支持 OCR 的银行 / 机构（从左向右滑）──────────── */}
@@ -266,9 +283,9 @@ export default function LandingPage() {
           <LandingSectionHeader
             eyebrow="COMPATIBILITY"
             title="一键识别 · 支持的银行与机构"
-            desc="主流商业银行、支付工具、公募基金 App，把账单截图丢进去，机构与代码一起被认出来。"
+            desc="主流商业银行、支付工具、公募基金 App，把账单截图丢进去，机构与代码一起被认出来"
           />
-          <LogoMarquee items={OCR_BRANDS} direction="right" />
+          <LogoMarquee items={OCR_BRANDS} direction="right" hideLabel cardWidth={240} />
         </section>
 
         <p className="mt-24 flex items-center justify-center gap-2 text-xs text-muted-foreground/60">

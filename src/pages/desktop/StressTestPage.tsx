@@ -11,11 +11,15 @@ import { ArrowRight, FlaskConical, Loader2, TrendingDown, Wallet } from "lucide-
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-const SCENARIO_META: Record<string, { badge: string; note: string }> = {
-  crash_2015: { badge: "2015 股灾", note: "急速下跌 · 中小成长股跌幅最重" },
-  pandemic_2020: { badge: "2020 疫情熔断", note: "海外冲击 · 消费出行下杀" },
-  bear_2022: { badge: "2022 熊市", note: "新能源与消费板块显著回调" },
-  job_loss: { badge: "失业 + 急用钱", note: "假设失业 6 个月 + 一次性支出 5 万" },
+/**
+ * 卡片顶部 mono 小字只放英文代号（不重复下方的中文标题）——
+ * 后端 `scenario_label` 已经是中文场景名，两处都写中文会变成同一句话说两遂。
+ */
+const SCENARIO_META: Record<string, { code: string; note: string }> = {
+  crash_2015: { code: "CRASH · 2015", note: "急速下跌 · 中小成长股跌幅最重" },
+  pandemic_2020: { code: "PANDEMIC · 2020", note: "海外冲击 · 消费出行下杀" },
+  bear_2022: { code: "BEAR · 2022", note: "新能源与消费板块显著回调" },
+  job_loss: { code: "LIQUIDITY SHOCK", note: "假设失业 6 个月 + 一次性支出 5 万" },
 };
 
 export default function StressTestPage() {
@@ -45,7 +49,7 @@ export default function StressTestPage() {
           <Wallet className="size-6 text-primary" />
           <div>
             <p className="text-sm">当前月度硬性支出：<b className="font-mono">{formatCurrency(profile.data?.monthly_expense ?? 15000)}</b></p>
-            <p className="text-xs text-muted-foreground">压力测试的"失业+急用钱"情景基于该数值计算应急金覆盖月份。</p>
+            <p className="text-xs text-muted-foreground">该数值决定断收情景下应急金能覆盖几个月。</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -94,7 +98,7 @@ function EmptyStress({ onRun, pending }: { onRun: () => void; pending: boolean }
 }
 
 function StressCard({ run }: { run: StressTestRun }) {
-  const meta = SCENARIO_META[run.scenario] ?? { badge: run.scenario_label, note: "" };
+  const meta = SCENARIO_META[run.scenario] ?? { code: "", note: "" };
   const isJobLoss = run.scenario === "job_loss";
   const breakdown = (run.detail.breakdown ?? []).slice(0, 5);
   const severe = run.loss_pct > 25 || (run.emergency_months != null && run.emergency_months < 3);
@@ -103,8 +107,10 @@ function StressCard({ run }: { run: StressTestRun }) {
     <article className={`rounded-lg border p-5 ${severe ? "border-destructive/40 bg-destructive/5" : "border-border bg-card"}`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[.2em] text-muted-foreground">{meta.badge}</p>
-          <h3 className="mt-1 text-lg font-medium">{run.scenario_label}</h3>
+          {meta.code && (
+            <p className="font-mono text-[10px] uppercase tracking-[.28em] text-muted-foreground/70">{meta.code}</p>
+          )}
+          <h3 className="mt-1.5 text-lg font-medium">{run.scenario_label}</h3>
           <p className="mt-1 text-xs text-muted-foreground">{meta.note || run.detail.desc}</p>
         </div>
         <TrendingDown className={`size-5 ${severe ? "text-destructive" : "text-muted-foreground"}`} />

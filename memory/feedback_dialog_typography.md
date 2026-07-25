@@ -1,6 +1,6 @@
 ---
-name: Dialog 中文排版与全宽按钮圆角
-description: 中文 Dialog 标题禁用 font-mono + 大 tracking；Dialog 内 w-full 深色按钮圆角要盖过外框，避免"穿模"观感
+name: 中文排版与 mono 小字的三条约束
+description: 中文标题禁用 font-mono + 大 tracking；Dialog 内 w-full 深色按钮圆角要盖过外框避免"穿模"；mono eyebrow 只放英文代号，不能与下方中文标题重复
 type: feedback
 ---
 
@@ -26,3 +26,12 @@ type: feedback
   - `src/components/desktop/ShareReportPanel.tsx` "生成新分享链接"按钮
 - 未来在 Dialog 里新增全宽 primary 按钮时按同样规格加，别只写 `w-full gap-2`。
 - 非全宽的次要按钮（`variant="ghost"` / `variant="outline"` 或宽度 auto 的），保持默认 `rounded-md` 不必动。
+
+## 规则 3：mono eyebrow 只放英文代号，不能重述中文标题
+
+**Why**：卡片/页面的典型结构是「mono 小字 eyebrow + 中文主标题 + 一句描述」。若 eyebrow 也写中文，而后端返回的主标题又是同一个词，就变成同一句话连着说两遂（压测卡曾经就是 `2015 股灾` / `2015 股灾`、`失业 + 急用钱` / `失业+急用钱` 上下堆叠），用户直接问“为什么标题都提了两遂”。
+
+**How to apply**：
+- eyebrow 位置只放**英文/数字代号**，且语义不重叠主标题。压测页已改成：`CRASH · 2015` / `PANDEMIC · 2020` / `BEAR · 2022` / `LIQUIDITY SHOCK`（`SCENARIO_META.code`，`src/pages/desktop/StressTestPage.tsx`），中文名只由后端 `scenario_label` 出一次。
+- 无法给出英文代号时，**宁可不渲染这行**（空字符串就不输出 `<p>`），也不要拿中文标题当 fallback 填进去。
+- 卡片内的描述文案同理：已经在标题里出现过的场景名不要在紧邻的说明里再抬一次（例：月度支出那条说明已从“压力测试的失业+急用钱情景…”简化为“该数值决定断收情景下应急金能覆盖几个月”）。
