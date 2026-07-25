@@ -100,12 +100,13 @@ export default function DashboardPage() {
   const worstMarket = stressRuns.filter((r) => r.scenario !== "job_loss").sort((a, b) => b.loss_pct - a.loss_pct)[0];
 
   const healthScore = useMemo(() => {
-    // 现金缓冲 (40) + X 光穿透集中度 (40) + 应急金月份 (20)
+    // 现金缓冲 (40) + Top1 单票集中度 (40) + 应急金月份 (20)
     let s = 40;
     if (total > 0) s += Math.min(40, (cashLike / total) * 100);
-    if (xray.data) {
-      const conc = Number(xray.data.concentration_score);
-      s -= Math.max(0, (conc - 40) * 0.6);
+    const topStockPct = Number(xray.data?.top_stocks?.[0]?.pct ?? 0);
+    if (topStockPct > 0) {
+
+      s -= Math.max(0, (topStockPct - 10) * 3);
     }
     s += Math.min(20, emergencyMonths * 3);
     return Math.max(30, Math.min(99, Math.round(s)));
@@ -179,11 +180,11 @@ export default function DashboardPage() {
           highlight={emergencyMonths < 3}
         />
         <MetricCard
-          label="X 光集中度"
-          value={xray.data ? `${Number(xray.data.concentration_score).toFixed(1)}%` : "尚未扫描"}
-          note={xray.data?.top_industry ? `最高行业：${xray.data.top_industry}` : "去 /xray 一键穿透"}
+          label="Top1 单票占比"
+          value={!xray.data ? "尚未扫描" : xray.data.top_stocks.length === 0 ? "暂无个股" : `${Number(xray.data.top_stocks[0].pct).toFixed(1)}%`}
+          note={!xray.data ? "去 X 光一键穿透" : xray.data.top_stocks.length === 0 ? "未扫描到股票 / 基金仓位" : `穿透后共 ${xray.data.top_stocks.length} 只不同个股`}
           icon={<ShieldAlert className="size-4 text-warning" />}
-          highlight={Number(xray.data?.concentration_score ?? 0) > 60}
+          highlight={Number(xray.data?.top_stocks?.[0]?.pct ?? 0) > 15}
         />
       </section>
 
@@ -232,7 +233,7 @@ export default function DashboardPage() {
             ) : alerts.length === 0 ? (
               <div className="rounded-md border border-success/30 bg-success/10 p-4 text-sm">
                 <b>暂未发现明显风险。</b>
-                <p className="mt-1 text-muted-foreground">最新 X 光穿透没有触发任何单行业或单票集中度告警。</p>
+                <p className="mt-1 text-muted-foreground">最新 X 光穿透没有触发任何单票集中度、跨基金重仓或现金缓冲告警。</p>
               </div>
             ) : (
               alerts.map((a, i) => <AlertRow key={i} alert={a} />)
@@ -244,10 +245,10 @@ export default function DashboardPage() {
             <Activity className="size-5" /><h2 className="font-medium">今日诊断摘要</h2>
           </div>
           <div className="mt-4 space-y-3 text-sm leading-6">
-            {xray.data && (
+            {xray.data && xray.data.top_stocks.length > 0 && (
               <p className="text-muted-foreground">
-                最近一次 X 光穿透显示，前三大行业合计权重 <b className="text-foreground">{Number(xray.data.concentration_score).toFixed(1)}%</b>
-                {xray.data.top_industry ? <>，最高行业 <b className="text-foreground">{xray.data.top_industry}</b>（{Number(xray.data.top_industry_pct ?? 0).toFixed(1)}%）。</> : "。"}
+                最近一次 X 光穿透共得到 <b className="text-foreground">{xray.data.top_stocks.length}</b> 只不同个股，其中最重的一只占总资产 <b className="text-foreground">{Number(xray.data.top_stocks[0].pct).toFixed(1)}%</b>。
+
               </p>
             )}
             {worstMarket && (

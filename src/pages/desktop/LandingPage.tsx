@@ -1,7 +1,9 @@
+import Logo from "@/components/desktop/Logo";
 import AccountDialog from "@/components/desktop/AccountDialog";
 import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
+import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -159,7 +161,7 @@ export default function LandingPage() {
             可能只是棋局的表象。
           </h1>
           <p className="mt-8 max-w-2xl text-lg font-medium leading-relaxed text-muted-foreground md:text-xl text-center">
-            将机构级视野赋能给普通的 Pawn。<br />
+            将机构级视野赋能给普通的 Pawn<br />
             通过
             <span className="relative mx-3 inline-flex items-center justify-center">
               <span className={`absolute -inset-x-3 -inset-y-1 -skew-y-2 bg-gradient-to-r ${highlightColors[(activeIndex + 1) % highlightColors.length]} transition-colors duration-500`}></span>

@@ -103,18 +103,13 @@ export default function SharedReportPage() {
           <p className="mt-2 text-xs text-muted-foreground">生成于 {formatDate(snapshot.generated_at)}</p>
         </header>
 
-        <section className="mt-6 grid gap-3 md:grid-cols-4">
+        <section className="mt-6 grid gap-3 md:grid-cols-3">
           <Stat label="总资产" value={formatCurrency(snapshot.portfolio.total)} />
           <Stat label="资产项数" value={`${snapshot.portfolio.count} 项`} />
           <Stat
-            label="穿透集中度"
-            value={snapshot.xray ? `${Number(snapshot.xray.concentration_score).toFixed(1)}%` : "—"}
-            tone={snapshot.xray && snapshot.xray.concentration_score > 60 ? "danger" : "info"}
-          />
-          <Stat
-            label="最高单行业"
-            value={snapshot.xray?.top_industry ?? "—"}
-            note={snapshot.xray?.top_industry_pct != null ? `${Number(snapshot.xray.top_industry_pct).toFixed(1)}%` : ""}
+            label="Top1 单票占比"
+            value={snapshot.xray && snapshot.xray.top_stocks.length > 0 ? `${Number(snapshot.xray.top_stocks[0].pct).toFixed(1)}%` : "—"}
+            tone={snapshot.xray && snapshot.xray.top_stocks.length > 0 && Number(snapshot.xray.top_stocks[0].pct) > 15 ? "danger" : "info"}
           />
         </section>
 
@@ -138,30 +133,49 @@ export default function SharedReportPage() {
           </div>
         </section>
 
-        {snapshot.xray && snapshot.xray.alerts.length > 0 && (
-          <section className="mt-8">
-            <h2 className="mb-3 flex items-center gap-2 text-sm font-medium"><ShieldAlert className="size-4 text-destructive" />关键风险</h2>
-            <ul className="space-y-2 text-sm">
-              {snapshot.xray.alerts.map((a, i) => (
-                <li key={i} className="rounded-md border border-border bg-secondary/40 p-3">
-                  <b>{a.title}</b>
-                  <p className="mt-1 text-muted-foreground">{a.message}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+        {(() => {
+          if (!snapshot.xray) return null;
+          // 兼容旧分享快照：行业告警已在产品维度删除；旧告警里可能残留 __nocode_<uuid>。
+          const NOCODE = /__nocode_[a-f0-9-]+/g;
+          const shownAlerts = snapshot.xray.alerts
+            .filter((a) => !/行业/.test(a.title) && !/行业/.test(a.message))
+            .map((a) => ({
+              level: a.level,
+              title: a.title.replace(NOCODE, "未标注个股"),
+              message: a.message.replace(NOCODE, "未标注个股"),
+            }));
+          if (shownAlerts.length === 0) return null;
+          return (
+            <section className="mt-8">
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-medium"><ShieldAlert className="size-4 text-destructive" />关键风险</h2>
+              <ul className="space-y-2 text-sm">
+                {shownAlerts.map((a, i) => (
+                  <li key={i} className="rounded-md border border-border bg-secondary/40 p-3">
+                    <b>{a.title}</b>
+                    <p className="mt-1 text-muted-foreground">{a.message}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })()}
 
         {snapshot.xray && snapshot.xray.top_stocks.length > 0 && (
           <section className="mt-8">
             <h2 className="mb-3 text-sm font-medium">穿透后 Top 单票</h2>
             <ol className="space-y-1.5 text-sm">
-              {snapshot.xray.top_stocks.slice(0, 8).map((s, i) => (
-                <li key={`${i}-${s.stock_name}`} className="flex items-center justify-between rounded-md bg-secondary/40 px-3 py-1.5">
-                  <span>{i + 1}. {s.stock_name}<span className="ml-2 text-xs text-muted-foreground">{s.industry}</span></span>
-                  <span className="font-mono">{Number(s.pct).toFixed(1)}%</span>
-                </li>
-              ))}
+              {snapshot.xray.top_stocks.slice(0, 8).map((s, i) => {
+                // 兼容：旧 snapshot 只有 stock_name/industry（无 stock_code），
+                // 先优先用 stock_code，拿不到时回退到旧的 stock_name，都没就用 “—”。
+                const legacy = s as { stock_name?: string };
+                const label = s.stock_code || legacy.stock_name || "—";
+                return (
+                  <li key={i} className="flex items-center justify-between rounded-md bg-secondary/40 px-3 py-1.5">
+                    <span className="font-mono">{i + 1}. {label}</span>
+                    <span className="font-mono">{Number(s.pct).toFixed(1)}%</span>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         )}

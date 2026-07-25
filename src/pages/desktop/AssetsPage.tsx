@@ -240,8 +240,6 @@ export default function AssetsPage() {
                 code: "portfolio",
                 changeAmount: portfolioChange.data.changeAmount,
                 changePct: portfolioChange.data.changePct,
-                        {getPlatformIcon(asset.platform)}
-                        <span>{asset.platform || "—"}</span>
                 asOf: new Date().toISOString(),
               }}
             />

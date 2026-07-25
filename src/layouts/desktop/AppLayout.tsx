@@ -1,3 +1,4 @@
+import Logo from "@/components/desktop/Logo";
 import AccountMenu from "@/components/desktop/AccountMenu";
 import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
@@ -35,7 +36,7 @@ export default function AppLayout() {
         <div className="hidden flex-col gap-2 border-t border-border p-4 md:flex">
           <button 
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="flex w-full items-center gap-3 rounded-md border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="flex w-full items-center gap-3 rounded-md border border-transparent px-4 py-3 text-sm transition-colors text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
             {theme === "dark" ? "切换为浅色模式" : "切换为深色模式"}

@@ -48,7 +48,6 @@ export function useRisk() {
     }
 
     const basis: RiskBasis = {
-      top_industry_pct: xrayData?.top_industry_pct ? Number(xrayData.top_industry_pct) : null,
       top_stock_pct: xrayData?.top_stocks?.[0]?.pct ? Number(xrayData.top_stocks[0].pct) : null,
       emergency_months,
       max_loss_pct,

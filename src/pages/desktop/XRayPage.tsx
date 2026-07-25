@@ -1,17 +1,26 @@
-import AlertRow from "@/components/desktop/AlertRow";
 import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
 import ShareReportPanel from "@/components/desktop/ShareReportPanel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStockNames } from "@/hooks/useStockNames";
 import { useLatestXRay, useRunXRay } from "@/hooks/useXray";
 import { formatCurrency } from "@/lib/asset-format";
 import type { XRayReport } from "@/types/app/analytics";
-import { ArrowRight, FileScan, Loader2, ScanLine } from "lucide-react";
-import { Link } from "react-router-dom";
+import { FileScan, Loader2, ScanLine } from "lucide-react";
+import { useMemo } from "react";
 import { toast } from "sonner";
+
+/** 重仓预警的收敛策略：合计占比 ≥ 1% 才算"明显"，最多展示 5 条。 */
+const DUPLICATE_ALERT_MIN_PCT = 1;
+const DUPLICATE_ALERT_MAX_COUNT = 5;
 
 function fmtPct(n: number, digits = 1): string {
   return `${n.toFixed(digits)}%`;
+}
+
+/** 无代码个股占位符 `__nocode_<id>` → 展示为 "—"，避免把内部 id 泄漏给用户。 */
+function displayCode(code: string): string {
+  return code.startsWith("__nocode_") ? "—" : code;
 }
 
 export default function XRayPage() {
@@ -33,7 +42,7 @@ export default function XRayPage() {
       <DiagnosticHeader
         title="基金 X 光穿透"
         eyebrow="FUND X-RAY LOOK-THROUGH"
-        description="把你的每一只基金拆平到底层持仓，加上直接持股，算出真实行业与个股集中度。"
+        description="把你的每一只基金拆平到底层持仓，加上直接持股，看清穿透后的真实个股暴露。"
       />
 
       <section className="mb-6 rounded-lg border border-border bg-card p-5">
@@ -81,7 +90,6 @@ function EmptyState({ onScan, pending }: { onScan: () => void; pending: boolean 
       <h3 className="mt-4 text-lg font-medium">还没扫描过</h3>
       <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
         我们会以你账本里的基金持仓为输入，拉取每只基金前 10 大重仓，把权重摊到你身上，再叠加直接持股，得到穿透后的真实敞口。
-        对于我们数据库暂未收录的基金，会单独列出并提示"未穿透"，不会静默丢弃。
       </p>
       <Button onClick={onScan} disabled={pending} className="mt-6 gap-2"><ScanLine className="size-4" />立即扫描</Button>
     </div>
@@ -89,117 +97,105 @@ function EmptyState({ onScan, pending }: { onScan: () => void; pending: boolean 
 }
 
 function XRayReportView({ report }: { report: XRayReport }) {
-  const topIndustries = report.industry_exposure.slice(0, 8);
-  return (
-    <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-4">
-        <StatCard label="总资产" value={formatCurrency(report.total_amount)} note={`扫描时刻的账本快照`} />
-        <StatCard label="基金 + 股票" value={formatCurrency(report.fund_amount + report.stock_amount)} note={`占比 ${(((report.fund_amount + report.stock_amount) / (report.total_amount || 1)) * 100).toFixed(1)}%`} />
-        <StatCard label="集中度评分" value={`${report.concentration_score.toFixed(1)}%`} note="前三行业权重合计" tone={report.concentration_score > 60 ? "warn" : report.concentration_score > 45 ? "info" : "success"} />
-        <StatCard label="最高单行业" value={report.top_industry ?? "-"} note={report.top_industry_pct != null ? fmtPct(report.top_industry_pct) : ""} tone={(report.top_industry_pct ?? 0) > 40 ? "danger" : "info"} />
-      </section>
+  const top10 = report.top_stocks.slice(0, 10);
 
-      {report.alerts.length > 0 && (
-        <section className="rounded-lg border border-border bg-card p-5">
-          <h2 className="mb-4 font-medium">发现的风险</h2>
-          <div className="grid gap-3">
-            {report.alerts.map((a, i) => <AlertRow key={i} alert={a} />)}
-          </div>
-        </section>
-      )}
-
-      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        <article className="rounded-lg border border-border bg-card p-5">
-          <h2 className="mb-4 font-medium">穿透后行业暴露</h2>
-          <div className="space-y-4">
-            {topIndustries.map((row) => (
-              <div key={row.industry}>
-                <div className="mb-1.5 flex justify-between text-sm">
-                  <span>{row.industry}</span>
-                  <span className="font-mono text-muted-foreground">{formatCurrency(row.amount)} · {fmtPct(row.pct)}</span>
-                </div>
-                <div className="h-2 rounded-full bg-secondary">
-                  <div
-                    className={`h-full rounded-full ${row.pct > 30 ? "bg-destructive" : row.pct > 15 ? "bg-warning" : "bg-primary"}`}
-                    style={{ width: `${Math.min(100, Math.max(row.pct, 2))}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-lg border border-border bg-card p-5">
-          <h2 className="mb-4 font-medium">Top 10 穿透后个股</h2>
-          <ol className="space-y-3 text-sm">
-            {report.top_stocks.slice(0, 10).map((s, i) => (
-              <li key={s.stock_code} className="rounded-md border border-border bg-secondary/30 px-3 py-2">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <b className="text-foreground">{i + 1}. {s.stock_name}</b>
-                    <span className="ml-2 text-xs text-muted-foreground">{s.stock_code} · {s.industry}</span>
-                  </div>
-                  <span className={`font-mono ${s.pct > 12 ? "text-destructive" : s.pct > 6 ? "text-warning" : "text-foreground"}`}>{fmtPct(s.pct)}</span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  来源：{s.sources.map((x) => x.direct ? "直接持股" : x.fund_name).filter(Boolean).slice(0, 3).join("；")}
-                  {s.sources.length > 3 && ` 等 ${s.sources.length} 处`}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </article>
-      </section>
-
-      {report.duplicate_holdings.length > 0 && (
-        <section className="rounded-lg border border-warning/30 bg-warning/5 p-5">
-          <h2 className="mb-2 font-medium">跨基金重仓预警</h2>
-          <p className="text-xs text-muted-foreground">同一支股票被 2+ 只基金同时持有意味着"表面上你分散买了多只基金，实际上仍集中在同几只股票上"。</p>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {report.duplicate_holdings.slice(0, 6).map((d) => (
-              <div key={d.stock_code} className="rounded-md border border-border bg-card p-3">
-                <div className="flex items-center justify-between">
-                  <b>{d.stock_name}</b>
-                  <span className="font-mono text-warning">合计 {fmtPct(d.total_pct)}</span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">出现在：{d.funds.map((f) => f.fund_name).join("、")}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {report.unmatched_funds.length > 0 && (
-        <section className="rounded-lg border border-info/30 bg-info/5 p-4 text-sm">
-          <b>以下基金仅部分穿透或未穿透，已将其未披露仓位计入“未知底层”以避免低估集中度：</b>
-          <ul className="mt-2 list-disc pl-5 text-muted-foreground">
-            {report.unmatched_funds.map((u, i) => (
-              <li key={`${u.code ?? "nocode"}-${i}"`}>{u.name}{u.code ? `（${u.code}）` : "（无代码）"} · {formatCurrency(u.amount)}{u.reason ? `· ${u.reason}` : ""}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <div className="flex flex-wrap gap-2">
-        <Button asChild variant="secondary" className="gap-2"><Link to="/stress-test">下一步：跑压力测试 <ArrowRight className="size-4" /></Link></Button>
-        <Button asChild variant="ghost" className="gap-2"><Link to="/chat">让 AI 医生解读这份报告 <ArrowRight className="size-4" /></Link></Button>
-      </div>
-    </div>
+  // 未穿透金额：包含“无代码 / 底稿未收录 / 披露不足”三种情形。
+  // Top10 的 pct 分母是总资产，只反映已披露部分——在卡片头部直接展示未披露量，避免“假分散”错觉。
+  const unmatchedTotal = useMemo(
+    () => report.unmatched_funds.reduce((sum, u) => sum + Number(u.amount || 0), 0),
+    [report.unmatched_funds],
   );
-}
+  const unmatchedPct = report.total_amount > 0 ? (unmatchedTotal / report.total_amount) * 100 : 0;
 
-function StatCard({ label, value, note, tone }: { label: string; value: string; note?: string; tone?: "danger" | "warn" | "info" | "success" }) {
-  const toneMap = {
-    danger: "border-destructive/40 bg-destructive/5 text-destructive",
-    warn: "border-warning/40 bg-warning/10",
-    info: "border-info/40 bg-info/5",
-    success: "border-success/30 bg-success/5",
-  } as const;
+  // 挑最明显的重仓预警：先按合计占比 desc，再过滤门槛 + 截断上限。
+  const duplicateAlerts = useMemo(() => {
+    return [...report.duplicate_holdings]
+      .sort((a, b) => b.total_pct - a.total_pct)
+      .filter((d) => d.total_pct >= DUPLICATE_ALERT_MIN_PCT)
+      .slice(0, DUPLICATE_ALERT_MAX_COUNT);
+  }, [report.duplicate_holdings]);
+
+  // Top10 与重仓预警展示要拿名称的股票代码合起来去查一次。
+  const codesForNames = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of top10) if (!s.stock_code.startsWith("__nocode_")) set.add(s.stock_code);
+    for (const d of duplicateAlerts) if (!d.stock_code.startsWith("__nocode_")) set.add(d.stock_code);
+    return Array.from(set);
+  }, [top10, duplicateAlerts]);
+  const names = useStockNames(codesForNames);
+  const nameMap = names.data ?? {};
+
   return (
-    <div className={`rounded-lg border p-5 shadow-sm ${tone ? toneMap[tone] : "border-border bg-card"}`}>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <b className="mt-3 block font-mono text-2xl tracking-tight">{value}</b>
-      {note && <p className="mt-2 text-xs text-muted-foreground">{note}</p>}
+    <div className="grid gap-6 lg:grid-cols-2">
+      <article className="rounded-lg border border-border bg-card p-5">
+        <h2 className="mb-4 font-medium">Top 10 穿透后个股</h2>
+        {unmatchedTotal > 0 && (
+          <p className="mb-4 rounded-md border border-dashed border-warning/40 bg-warning/5 p-3 text-xs leading-5 text-muted-foreground">
+            另有 <b className="font-mono text-foreground">{formatCurrency(unmatchedTotal)}</b>（约占总资产 <b className="font-mono text-foreground">{unmatchedPct.toFixed(1)}%</b>）的基金仓位未被穿透，下方占比仅代表已披露部分。
+          </p>
+        )}
+        {top10.length === 0 ? (
+          <p className="text-sm text-muted-foreground">尚无穿透后的个股（可能你的账本里没有基金 / 股票）。</p>
+        ) : (
+          <ol className="space-y-3 text-sm">
+            {top10.map((s, i) => {
+              const code = displayCode(s.stock_code);
+              const displayName = nameMap[s.stock_code];
+              return (
+                <li key={s.stock_code} className="rounded-md border border-border bg-secondary/30 px-3 py-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <b className="font-mono text-foreground">{i + 1}. {code}</b>
+                      {displayName && (
+                        <span className="ml-2 text-xs text-muted-foreground">{displayName}</span>
+                      )}
+                    </div>
+                    <span className={`shrink-0 font-mono ${s.pct > 12 ? "text-destructive" : s.pct > 6 ? "text-warning" : "text-foreground"}`}>{fmtPct(s.pct)}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    来源：{s.sources.map((x) => x.direct ? "直接持股" : x.fund_name).filter(Boolean).slice(0, 3).join("；")}
+                    {s.sources.length > 3 && ` 等 ${s.sources.length} 处`}
+                  </p>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </article>
+
+      <article className="rounded-lg border border-warning/30 bg-warning/5 p-5">
+        <h2 className="mb-1 font-medium">跨基金重仓预警</h2>
+        <p className="text-xs text-muted-foreground">同一支股票被 2+ 只基金同时持有意味着"表面上你分散买了多只基金，实际上仍集中在同几只股票上"。这里只挑最明显的几只。</p>
+        {duplicateAlerts.length === 0 ? (
+          <div className="mt-4 rounded-md border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            没有被 2 只及以上基金同时重仓的个股。
+          </div>
+        ) : (
+          <ul className="mt-4 space-y-3 text-sm">
+            {duplicateAlerts.map((d) => {
+              const code = displayCode(d.stock_code);
+              const displayName = nameMap[d.stock_code];
+              return (
+                <li key={d.stock_code} className="rounded-md border border-border bg-card p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <b className="font-mono">{code}</b>
+                      {displayName && (
+                        <span className="ml-2 text-xs text-muted-foreground">{displayName}</span>
+                      )}
+                    </div>
+                    <span className="shrink-0 font-mono text-warning">合计 {fmtPct(d.total_pct)}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    出现在：{d.funds.map((f) => f.fund_name).slice(0, 3).join("、")}
+                    {d.funds.length > 3 && ` 等 ${d.funds.length} 只`}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </article>
     </div>
   );
 }
