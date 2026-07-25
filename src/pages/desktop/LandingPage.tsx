@@ -4,7 +4,6 @@ import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
 import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
-import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
