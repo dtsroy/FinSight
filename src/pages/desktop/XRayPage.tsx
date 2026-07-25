@@ -1,5 +1,7 @@
 import DiagnosticHeader from "@/components/desktop/DiagnosticHeader";
 import ShareReportPanel from "@/components/desktop/ShareReportPanel";
+import IndustryDistributionBar, { type IndustryBarItem } from "@/components/desktop/xray/IndustryDistributionBar";
+import StockShareDonut, { type StockShareItem } from "@/components/desktop/xray/StockShareDonut";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStockIndustries } from "@/hooks/useStockIndustries";
@@ -152,7 +154,7 @@ function XRayReportView({ report }: { report: XRayReport }) {
   const industries = useStockIndustries(codesForIndustries);
   const industryMap = industries.data ?? {};
 
-  const { topIndustries, unclassifiedAmount } = useMemo(() => {
+  const { topIndustries, unclassifiedAmount, otherIndustriesAmount } = useMemo(() => {
     const agg = new Map<string, IndustryExposure>();
     let unknown = 0;
     for (const s of report.top_stocks) {
@@ -170,16 +172,92 @@ function XRayReportView({ report }: { report: XRayReport }) {
       entry.stocks.push(s);
     }
     const denominator = report.total_amount || 1;
-    const ranked = Array.from(agg.values())
+    const all = Array.from(agg.values())
       .map((e) => ({
         ...e,
         pct: (e.amount / denominator) * 100,
         stocks: [...e.stocks].sort((a, b) => b.amount - a.amount),
       }))
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, TOP_INDUSTRY_COUNT);
-    return { topIndustries: ranked, unclassifiedAmount: unknown };
+      .sort((a, b) => b.amount - a.amount);
+    const top = all.slice(0, TOP_INDUSTRY_COUNT);
+    const otherAmount = all.slice(TOP_INDUSTRY_COUNT).reduce((s, e) => s + e.amount, 0);
+    return { topIndustries: top, unclassifiedAmount: unknown, otherIndustriesAmount: otherAmount };
   }, [report.top_stocks, report.total_amount, industryMap]);
+
+  // 环形饼图数据：Top 8 单列 + 剩余合并成「其他 N 只」+ 未穿透基金仓位单列（都归为 aggregate 灰色）。
+  const stockDonutData = useMemo<StockShareItem[]>(() => {
+    const denom = report.total_amount || 1;
+    const sorted = [...report.top_stocks].sort((a, b) => b.amount - a.amount);
+    const N = 8;
+    const topN = sorted.slice(0, N);
+    const rest = sorted.slice(N);
+    const restAmount = rest.reduce((s, x) => s + x.amount, 0);
+    const items: StockShareItem[] = topN.map((s) => ({
+      key: s.stock_code,
+      label: stockLabel(s.stock_code, nameMap),
+      amount: s.amount,
+      pct: (s.amount / denom) * 100,
+    }));
+    if (restAmount > 0) {
+      items.push({
+        key: "__others__",
+        label: `其他 ${rest.length} 只个股`,
+        amount: restAmount,
+        pct: (restAmount / denom) * 100,
+        aggregate: true,
+      });
+    }
+    if (unmatchedTotal > 0) {
+      items.push({
+        key: "__unmatched__",
+        label: "未穿透基金仓位",
+        amount: unmatchedTotal,
+        pct: unmatchedPct,
+        aggregate: true,
+      });
+    }
+    return items;
+  }, [report.top_stocks, report.total_amount, nameMap, unmatchedTotal, unmatchedPct]);
+
+  // 柱状图数据：Top 5 行业 + 其他行业合并 + 未识别行业 + 未穿透基金，凑齐 100% 全资产画像。
+  const industryBarData = useMemo<IndustryBarItem[]>(() => {
+    const denom = report.total_amount || 1;
+    const bars: IndustryBarItem[] = topIndustries.map((ind) => ({
+      key: ind.industry,
+      label: ind.industry,
+      amount: ind.amount,
+      pct: ind.pct,
+      kind: "top",
+    }));
+    if (otherIndustriesAmount > 0) {
+      bars.push({
+        key: "__other_ind__",
+        label: "其他行业",
+        amount: otherIndustriesAmount,
+        pct: (otherIndustriesAmount / denom) * 100,
+        kind: "other",
+      });
+    }
+    if (unclassifiedAmount > 0) {
+      bars.push({
+        key: "__unclassified__",
+        label: "未识别行业",
+        amount: unclassifiedAmount,
+        pct: (unclassifiedAmount / denom) * 100,
+        kind: "unknown",
+      });
+    }
+    if (unmatchedTotal > 0) {
+      bars.push({
+        key: "__unmatched__",
+        label: "未穿透基金",
+        amount: unmatchedTotal,
+        pct: unmatchedPct,
+        kind: "unmatched",
+      });
+    }
+    return bars;
+  }, [topIndustries, otherIndustriesAmount, unclassifiedAmount, unmatchedTotal, unmatchedPct, report.total_amount]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -249,6 +327,15 @@ function XRayReportView({ report }: { report: XRayReport }) {
             )}
           </>
         )}
+        {!industries.isLoading && industryBarData.length > 0 && (
+          <div className="mt-5 border-t border-border/50 pt-5">
+            <div className="mb-2 flex items-baseline justify-between gap-3">
+              <h3 className="text-sm font-medium">完整行业分布</h3>
+              <p className="text-[11px] text-muted-foreground">Top5 + 其他行业 + 未识别 + 未穿透，一起画全资产 100% 图景</p>
+            </div>
+            <IndustryDistributionBar items={industryBarData} />
+          </div>
+        )}
       </article>
 
       <article className="rounded-lg border border-warning/30 bg-warning/5 p-5">
@@ -283,6 +370,12 @@ function XRayReportView({ report }: { report: XRayReport }) {
             })}
           </ul>
         )}
+      </article>
+
+      <article className="rounded-lg border border-border bg-card p-5">
+        <h2 className="mb-1 font-medium">穿透后个股相对占比</h2>
+        <p className="mb-4 text-xs text-muted-foreground">按穿透后金额对所有个股排序，取前 8 只单列，其余合并成「其他」；未穿透的基金仓位单独归一列（灰色），从颜色深浅一眼看清哪里"分散"是真、哪里是假。</p>
+        <StockShareDonut items={stockDonutData} />
       </article>
     </div>
   );

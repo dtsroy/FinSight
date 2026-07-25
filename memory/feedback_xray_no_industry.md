@@ -12,19 +12,31 @@ type: feedback
 
 X 光页面 `src/pages/desktop/XRayPage.tsx` 展示三块：
 
-1. **Top 10 穿透后个股**
+1. **Top 10 穿透后个股**（列表）
    - React key、主标题都是 `stock_code`，名称走 `useStockNames` 异步补齐显示成 `名称（代码）`。
    - 头部有"未穿透金额提示"：当 `unmatched_funds` 里有金额（无代码 / 底稿未收录 / 披露不足）时，会醒目提示总金额和占比，避免 Top10 分母造成的"假分散"错觉。
 
-2. **Top 5 行业**（v2 新加回来）
+2. **Top 5 行业**（v2 新加回来，列表）
    - 对全部穿透后个股（基金按披露权重折算你的实际金额 + 直接持股）逐只调 `useStockIndustries` → `stockIndustryService.fetchStockIndustriesByCodes` → 本地 Python 后端 `GET /get_industry_from_code`（Panda AI Quant `sector_code_name`）拿真实行业。
    - 聚合后按金额 desc 取 Top 5，>25% warning，>40% destructive。
    - 查不到行业的个股金额单独在下方以"另有 ¥N 的穿透个股未能识别行业"提示，绝不落到"其他"里让整张图变幻觉。
 
-3. **跨基金重仓预警**
+3. **跨基金重仓预警**（列表）
    - 同一支股票被 **2+ 只不同基金**（按 fund_code 去重，不是 sources.length）同时重仓。
    - 只挑最明显的几只：先按 `total_pct` desc，只保留 `total_pct ≥ 1%`，最多 5 条。常量在 `XRayPage.tsx` 顶部：`DUPLICATE_ALERT_MIN_PCT = 1`、`DUPLICATE_ALERT_MAX_COUNT = 5`。
    - 收敛数量必须明显少于 Top10（10 vs ≤5），否则两块看起来重复。
+
+上面三块列表另配两张可视化拼成 2×2 布局，位于右列：
+
+4. **完整行业分布柱状图**（接在 Top 5 行业 article 下方，共享右列上半格）
+   - `src/components/desktop/xray/IndustryDistributionBar.tsx`，横向 recharts BarChart（`layout="vertical"`）。
+   - 四种 kind 对应四种颜色：`top`（前景色）/ `other`（muted-foreground）/ `unknown`（warning）/ `unmatched`（destructive）。颜色化不重叠不抢主颜色。
+   - 数据组成：Top 5 行业 + 其他行业合并（已识别总金额 - Top5）+ 未识别行业 + 未穿透基金，拼成 100% 全资产画像。若行业接口 loading 中则不展示（避免距往变化）。
+
+5. **穿透后个股相对占比环形饼图**（与“跨基金重仓预警”平行，占右列下半格）
+   - `src/components/desktop/xray/StockShareDonut.tsx`，recharts Donut PieChart + 右侧图例列表。
+   - 颜色：Top 8 个股用前景色 8 级递减 opacity（1.0 → 0.28），“其他 N 只”与“未穿透基金仓位”均为 `aggregate` 中性灰。
+   - 中心洞里固定展示 Top1 pct + 名称，与 Top 10 列表的头号一致（卡牌内的“一句话”归数）。
 
 ## 关键设计原则（跨版本都成立）
 
