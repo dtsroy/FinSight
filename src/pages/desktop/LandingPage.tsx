@@ -1,20 +1,18 @@
-import Logo from "@/components/desktop/Logo";
 import AccountDialog from "@/components/desktop/AccountDialog";
+import FeatureCards from "@/components/desktop/landing/FeatureCards";
+import LandingSectionHeader from "@/components/desktop/landing/LandingSectionHeader";
+import LogoMarquee, { type LogoMarqueeItem } from "@/components/desktop/landing/LogoMarquee";
+import XRayScannerPanel from "@/components/desktop/landing/XRayScannerPanel";
+import IndustryDistributionBar, { type IndustryBarItem } from "@/components/desktop/xray/IndustryDistributionBar";
+import StockShareDonut, { type StockShareItem } from "@/components/desktop/xray/StockShareDonut";
 import SiteLogo from "@/components/SiteLogo";
 import { useAccountIdentity } from "@/hooks/useAuthGuard";
 import { signOutAndReanonymize } from "@/services/authService";
-import { ArrowRight, FileScan, FlaskConical, Layers3, LogIn, LogOut, ShieldCheck, Target, TrendingUp, Sun, Moon } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ArrowRight, LogIn, LogOut, ShieldCheck, Sun, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { useTheme } from "next-themes";
-
-const features = [
-  { icon: Layers3, title: "多维极速导入与智能归类", text: "零样本视觉特征提取，自动判断机构特征并归集各类资产。" },
-  { icon: FileScan, title: "底层资产穿透 X-Ray", text: "击碎“假分散”。穿透基金底稿，找出重叠持仓与隐形的高危暴露。" },
-  { icon: FlaskConical, title: "自适应问诊引擎", text: "告别生硬问卷。在温和投顾与严厉医生间无缝切换，阻断情绪化决策。" },
-];
 
 const titleWords = ["分散", "安全", "稳健", "掌控"];
 const subWords = ["API 协同归集资产", "穿透剖析底层持仓", "宏观视角的压力测试", "极度理性的风控阻断"];
@@ -24,11 +22,66 @@ const highlightColors = [
   "from-success/30 to-success/20"
 ];
 
-const mockPieData = [
-  { name: "贵州茅台", value: 48.7 },
-  { name: "其他资产", value: 51.3 },
+/** 使用的服务 —— svg 到位前先渲染空位占位，后续把 `src` 填上即可无痛替换 */
+const SERVICES: LogoMarqueeItem[] = [
+  { label: "Superun AI Gateway", note: "视觉 + 推理大模型" },
+  { label: "Superun Cloud", note: "Postgres · Auth · Edge" },
+  { label: "Panda AI Quant", note: "A 股行情 · 名称 · 行业" },
+  { label: "同花顺 10jqka", note: "基金披露前 10 重仓" },
+  { label: "FastAPI + Uvicorn", note: "行情桥接后端" },
+  { label: "cpolar", note: "HTTPS 内网穿透" },
+  { label: "React 18 + Vite", note: "前端框架" },
+  { label: "Tailwind CSS", note: "样式引擎" },
+  { label: "shadcn/ui", note: "组件底座" },
+  { label: "Recharts", note: "数据可视化" },
 ];
-const COLORS = ["hsl(var(--foreground))", "hsl(var(--muted))"];
+
+/** 支持一键 OCR 识别的银行 / 机构 —— svg 到位前先渲染空位占位 */
+const OCR_BRANDS: LogoMarqueeItem[] = [
+  { label: "招商银行" },
+  { label: "建设银行" },
+  { label: "中国工商银行" },
+  { label: "中国银行" },
+  { label: "农业银行" },
+  { label: "交通银行" },
+  { label: "中信银行" },
+  { label: "兴业银行" },
+  { label: "浦发银行" },
+  { label: "平安银行" },
+  { label: "汇丰银行" },
+  { label: "渣打银行" },
+  { label: "支付宝 · 蚂蚁财富" },
+  { label: "微信" },
+  { label: "天天基金" },
+  { label: "同花顺" },
+];
+
+/**
+ * Landing 页两张雷达卡的静态演示数据。数值取自演示组合"小王"真实 X 光穿透输出，
+ * 视觉与登录后 /xray 页完全一致 —— Landing 页游客无需触发后端就能看到"真实感"。
+ */
+const XRAY_DONUT_MOCK: StockShareItem[] = [
+  { key: "600519", label: "贵州茅台（600519）", amount: 48869, pct: 9.72 },
+  { key: "300750", label: "宁德时代（300750）", amount: 38015, pct: 7.56 },
+  { key: "000568", label: "泸州老窖（000568）", amount: 5836, pct: 1.16 },
+  { key: "600809", label: "山西汾酒（600809）", amount: 5017, pct: 1.0 },
+  { key: "000858", label: "五粮液（000858）", amount: 4784, pct: 0.95 },
+  { key: "002384", label: "东山精密（002384）", amount: 4326, pct: 0.86 },
+  { key: "603986", label: "兆易创新（603986）", amount: 3488, pct: 0.69 },
+  { key: "300502", label: "新易盛（300502）", amount: 3375, pct: 0.67 },
+  { key: "__others__", label: "其他 12 只个股", amount: 34100, pct: 6.78, aggregate: true },
+  { key: "__unmatched__", label: "未穿透基金仓位", amount: 96056, pct: 19.10, aggregate: true },
+];
+
+const XRAY_INDUSTRY_MOCK: IndustryBarItem[] = [
+  { key: "必需消费品", label: "必需消费品", amount: 64586, pct: 12.85, kind: "top" },
+  { key: "工业", label: "工业", amount: 38015, pct: 7.56, kind: "top" },
+  { key: "信息技术", label: "信息技术", amount: 29630, pct: 5.90, kind: "top" },
+  { key: "医疗保健", label: "医疗保健", amount: 19614, pct: 3.90, kind: "top" },
+  { key: "__other__", label: "其他行业", amount: 4966, pct: 0.99, kind: "other" },
+  { key: "__unclassified__", label: "未识别行业", amount: 5045, pct: 1.00, kind: "unknown" },
+  { key: "__unmatched__", label: "未穿透基金", amount: 96056, pct: 19.10, kind: "unmatched" },
+];
 
 export default function LandingPage() {
   const identity = useAccountIdentity();
@@ -36,9 +89,6 @@ export default function LandingPage() {
   const [dialogMode, setDialogMode] = useState<"signin" | "signup">("signin");
   const [signingOut, setSigningOut] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [activeIndex, setActiveIndex] = useState(0);
   const { theme, setTheme } = useTheme();
 
@@ -47,7 +97,7 @@ export default function LandingPage() {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -56,24 +106,6 @@ export default function LandingPage() {
     }, 1200);
     return () => clearInterval(interval);
   }, []);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = -((y - centerY) / centerY) * 10;
-    const rotateY = ((x - centerX) / centerX) * 10;
-    
-    setRotation({ x: rotateX, y: rotateY });
-  }
-
-  function handleMouseLeave() {
-    setRotation({ x: 0, y: 0 });
-  }
 
   function openDialog(mode: "signin" | "signup") {
     setDialogMode(mode);
@@ -106,39 +138,39 @@ export default function LandingPage() {
       <nav className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "border-b border-border/40 bg-background/80 backdrop-blur-lg" : "bg-transparent"}`}>
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-5 md:px-10">
           <SiteLogo iconClassName="size-8" />
-        <div className="flex items-center gap-2 md:gap-4">
-          {identity.isAnonymous ? (
-            <>
-              <button onClick={() => openDialog("signin")} className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-primary">
-                <LogIn className="size-4" />登录
-              </button>
-              <button onClick={() => openDialog("signup")} className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary transition-colors hover:bg-primary/15">
-                注册
-              </button>
-            </>
-          ) : (
-            <>
-              <span className="hidden text-xs text-muted-foreground md:inline">
-                已登录 · <span className="font-mono">{formatEmail(identity.email)}</span>
-              </span>
-              <Link to="/dashboard" className="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm">
-                进入账本 <ArrowRight className="size-3.5" />
-              </Link>
-              <button onClick={onSignOut} disabled={signingOut} className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-destructive">
-                <LogOut className="size-4" />{signingOut ? "退出中…" : "退出"}
-              </button>
-            </>
-          )}
-          
-          <div className="ml-2 hidden h-5 w-px bg-border md:block"></div>
-          <button 
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")} 
-            className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-          </button>
-        </div>
+          <div className="flex items-center gap-2 md:gap-4">
+            {identity.isAnonymous ? (
+              <>
+                <button onClick={() => openDialog("signin")} className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-primary">
+                  <LogIn className="size-4" />登录
+                </button>
+                <button onClick={() => openDialog("signup")} className="rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary transition-colors hover:bg-primary/15">
+                  注册
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="hidden text-xs text-muted-foreground md:inline">
+                  已登录 · <span className="font-mono">{formatEmail(identity.email)}</span>
+                </span>
+                <Link to="/dashboard" className="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2 text-sm">
+                  进入账本 <ArrowRight className="size-3.5" />
+                </Link>
+                <button onClick={onSignOut} disabled={signingOut} className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-destructive">
+                  <LogOut className="size-4" />{signingOut ? "退出中…" : "退出"}
+                </button>
+              </>
+            )}
+
+            <div className="ml-2 hidden h-5 w-px bg-border md:block"></div>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -146,8 +178,8 @@ export default function LandingPage() {
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
       <main className="mx-auto max-w-[1200px] px-5 pb-24 pt-32 md:px-10 md:pt-40">
-        
-        {/* Top Centered Section */}
+
+        {/* ── Section 1 · Hero ─────────────────────────────────────────────── */}
         <section className="mx-auto flex max-w-4xl flex-col items-center text-center">
           <p className="mb-6 font-mono text-xs font-semibold tracking-[.32em] text-foreground/60">YOUR NEXT-GEN INSIGHT HUB</p>
           <h1 className="text-6xl font-extrabold leading-[1.1] tracking-tighter md:text-[5.5rem]">
@@ -169,7 +201,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link to="/dashboard" className="group flex items-center gap-2 rounded-xl bg-foreground px-8 py-4 text-base font-semibold text-background transition-all hover:bg-foreground/90 hover:shadow-xl hover:shadow-foreground/20">
-              {identity.isAnonymous ? "免费开始使用" : "打开我的账本"} 
+              {identity.isAnonymous ? "免费开始使用" : "打开我的账本"}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
             </Link>
             {identity.isAnonymous ? (
@@ -190,104 +222,56 @@ export default function LandingPage() {
           </p>
         </section>
 
-        {/* Bottom Split Section */}
-        <section className="mt-32 grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
-          
-          {/* Left: 3D Alarm Panel */}
-          <div className="group [perspective:1000px] relative">
-            <div 
-              ref={cardRef}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              className="radiograph-panel relative rounded-2xl border border-border/60 bg-card/60 p-6 backdrop-blur-2xl transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-[0_20px_60px_-15px_rgba(239,68,68,0.15)] md:p-8"
-              style={{
-                transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
-              }}
-            >
-              <div className="scanner-line" />
-              <div className="flex items-center justify-between border-b border-border/50 pb-5">
-                <span className="font-mono text-xs font-bold tracking-widest text-muted-foreground/80">AGENT: X-RAY ENGINE</span>
-                <span className="relative flex items-center gap-2 rounded-full border border-foreground/20 bg-foreground/5 px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-[0_0_15px_rgba(0,0,0,0.05)]">
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground opacity-40"></span>
-                    <span className="relative inline-flex size-2 rounded-full bg-foreground"></span>
-                  </span>
-                  诊断分析中
-                </span>
-              </div>
-              
-              {/* Pie Chart Section */}
-              <div className="relative mt-8 flex flex-col items-center justify-center">
-                <div className="relative h-44 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={mockPieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
-                        startAngle={90}
-                        endAngle={-270}
-                        dataKey="value"
-                        stroke="none"
-                        animationDuration={1500}
-                      >
-                        {mockPieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} opacity={index === 0 ? 1 : 0.2} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                  {/* Center Text */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="font-mono text-3xl font-bold tracking-tighter text-foreground">18.5 %</span>
-                    <span className="text-[10px] font-medium text-muted-foreground">贵州茅台</span>
-                  </div>
-                </div>
-                <div className="mt-2 text-center">
-                  <p className="text-sm font-medium text-muted-foreground">单票隐性重仓过载</p>
-                  <p className="mt-1 text-xs text-muted-foreground/60">表面直接持有仅 8%，穿透后触发风控阈值</p>
-                </div>
-              </div>
+        {/* ── Section 2 · 双雷达面板：左环形（个股占比）+ 右柱状（行业分布）── */}
+        <section className="mt-28 grid items-stretch gap-6 lg:grid-cols-2">
+          <XRayScannerPanel
+            title="AGENT · X-RAY DONUT"
+            subtitle="穿透后个股相对占比"
+            footerNote="Top 8 个股按占比由深到浅铺前景色；其余合并成「其他 12 只」；未穿透基金仓位单独归灰。"
+          >
+            <StockShareDonut items={XRAY_DONUT_MOCK} />
+          </XRayScannerPanel>
 
-              {/* Bottom Metrics */}
-              <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="group/metric flex flex-col items-start justify-between rounded-xl border border-border/50 bg-background/40 p-4 transition-colors hover:bg-background/80">
-                  <div className="flex w-full items-center justify-between">
-                    <span className="text-xs font-medium text-muted-foreground">高危行业集中度</span>
-                    <Target className="size-4 text-muted-foreground/50 transition-colors group-hover/metric:text-foreground" />
-                  </div>
-                  <b className="mt-3 block font-mono text-2xl tracking-tight text-foreground">60 <span className="text-lg text-muted-foreground">%+</span></b>
-                </div>
-                <div className="group/metric flex flex-col items-start justify-between rounded-xl border border-border/50 bg-background/40 p-4 transition-colors hover:bg-background/80">
-                  <div className="flex w-full items-center justify-between">
-                    <span className="text-xs font-medium text-muted-foreground">流动性储备</span>
-                    <TrendingUp className="size-4 text-muted-foreground/50 transition-colors group-hover/metric:text-foreground" />
-                  </div>
-                  <b className="mt-3 block font-mono text-2xl tracking-tight text-foreground">&lt; 3 <span className="text-sm text-muted-foreground">个月</span></b>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Vertical Features Stack */}
-          <div className="flex flex-col gap-5">
-            {features.map(({ icon: Icon, title, text }) => (
-              <article key={title} className="group/feature flex items-start gap-5 rounded-2xl border border-border/60 bg-card/40 p-7 transition-all duration-300 hover:-translate-y-1 hover:border-border hover:bg-card hover:shadow-xl hover:shadow-foreground/5">
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-xl border border-foreground/10 bg-foreground/5 text-foreground transition-all duration-300 group-hover/feature:scale-110 group-hover/feature:bg-foreground group-hover/feature:text-background">
-                  <Icon className="size-6" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground">{title}</h2>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">{text}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <XRayScannerPanel
+            title="AGENT · SECTOR BAR"
+            subtitle="完整行业分布 · 100% 全资产画像"
+            footerNote="Top 5 行业 + 其他行业 + 未识别行业 + 未穿透基金一起拼齐，看清真实的行业集中度。"
+          >
+            <IndustryDistributionBar items={XRAY_INDUSTRY_MOCK} />
+          </XRayScannerPanel>
         </section>
 
-        <p className="mt-20 flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
+        {/* ── Section 3 · 六件武器 3×2 feature 卡片 ──────────────────────── */}
+        <section className="mt-28">
+          <LandingSectionHeader
+            eyebrow="CAPABILITIES"
+            title="FinSight 的六件武器"
+            desc="从截图导入到 AI 诊断，六个动作，把你的资产从散落各处的孤岛拉回同一张桌面。"
+          />
+          <FeatureCards />
+        </section>
+
+        {/* ── Section 4 · 使用的服务（从右向左滑）───────────────────────── */}
+        <section className="mt-24">
+          <LandingSectionHeader
+            eyebrow="STACK"
+            title="我们的技术栈"
+            desc="从数据采集到模型推理，每一段路都交给最擅长的服务。图标待你回来补上，占位卡随后无缝替换。"
+          />
+          <LogoMarquee items={SERVICES} direction="left" />
+        </section>
+
+        {/* ── Section 5 · 支持 OCR 的银行 / 机构（从左向右滑）──────────── */}
+        <section className="mt-10">
+          <LandingSectionHeader
+            eyebrow="COMPATIBILITY"
+            title="一键识别 · 支持的银行与机构"
+            desc="主流商业银行、支付工具、公募基金 App，把账单截图丢进去，机构与代码一起被认出来。"
+          />
+          <LogoMarquee items={OCR_BRANDS} direction="right" />
+        </section>
+
+        <p className="mt-24 flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
           <ShieldCheck className="size-4" />资产诊断分析不构成投资建议，投资有风险，决策需谨慎。
         </p>
       </main>

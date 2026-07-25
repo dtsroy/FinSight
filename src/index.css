@@ -150,6 +150,17 @@
 @keyframes pulse { from { background-position-x: 0; } to { background-position-x: -360px; } }
 @media (prefers-reduced-motion: reduce) { .scanner-line, .pulse-line { animation: none; } }
 
+/* ── Landing 页 logo / 服务卡的无缝横向滚动跑马灯 ─────────────────────────────────
+   .marquee-track 里的 items 需要复制两遍并列渲染，才能通过 translateX(-50%) 无缝循环。
+   .marquee-wrapper 加左右 mask 让两端柔和渐隐；hover 会暂停以便用户细看。 */
+@keyframes marquee-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.marquee-wrapper { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent); }
+.marquee-track { display: flex; width: max-content; animation: marquee-left 45s linear infinite; }
+.marquee-track-reverse { display: flex; width: max-content; animation: marquee-right 45s linear infinite; }
+.marquee-wrapper:hover .marquee-track, .marquee-wrapper:hover .marquee-track-reverse { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .marquee-track, .marquee-track-reverse { animation: none; } }
+
 @layer base {
   :root {
     --background: 0 0% 100%;
